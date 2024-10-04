@@ -3,8 +3,11 @@
 @tailwind utilities;
 
 @media (max-width: 400px) {
-  .hide-container{
-    display: none;
+  .hidecontainer{
+    display: none !important;
+  }
+  .hide{
+    display: none !important;
   }
   
 }

@@ -1,11 +1,11 @@
-import { createContext,  useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { useAuthContext } from "./AuthContext";
 
 export const SocketContext = createContext({});
 
 export const SocketContextProvider = ({ children }) => {
-  const {authUser} = useAuthContext()
+  const { authUser } = useAuthContext();
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const token = localStorage.getItem("authToken");
@@ -18,11 +18,13 @@ export const SocketContextProvider = ({ children }) => {
       });
       setSocket(socket);
 
-      socket.on('getOnlineUsers',(res)=>{
-        console.log(res)
-        setOnlineUsers(res)
+      socket.on("connect",() => {
+        console.log("connected", socket.id);
       })
-      return ()=> socket.close()
+      socket.on("getOnlineUsers", (res) => {
+        setOnlineUsers(res);
+      });
+      return () => socket.close();
     } else {
       if (socket) {
         socket.close();

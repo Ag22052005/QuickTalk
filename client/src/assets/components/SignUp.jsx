@@ -66,12 +66,11 @@ const SignUp = () => {
               <button className="btn btn-primary">Sign Up</button>
             </div>
             <div className="text-center">
-              New to here?{" "}
+              Already an user? {"  "}
               <Link to={"/login"} className="text-blue-600">
                 Sign In
               </Link>
             </div>
-            <div onClick={()=>localStorage.clear()}>logout</div>
           </form>
         </div>
       </div>

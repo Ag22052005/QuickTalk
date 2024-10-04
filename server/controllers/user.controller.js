@@ -87,7 +87,7 @@ const signUp = async (req, res) => {
     const authToken = jwt.sign(payload, process.env.JWT_KEY);
     // console.log(authToken);
     res.status(200).json({ user, authToken: authToken });
-    res.status(201).json(response)
+
   } catch (e) {
     console.log(e);
     if (e.errorResponse && e.errorResponse.code === 11000) {

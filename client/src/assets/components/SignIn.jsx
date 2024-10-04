@@ -49,7 +49,7 @@ const SignIn = () => {
             <div className="form-control mt-6" type="submit">
               <button className="btn btn-primary" >Login</button>
             </div>
-            <div className="text-center">Already an user? <Link to={'/signup'} className="text-blue-600">SignUp</Link></div>
+            <div className="text-center">New to here? {"  "} <Link to={'/signup'} className="text-blue-600">SignUp</Link></div>
           </form>
         </div>
       </div>

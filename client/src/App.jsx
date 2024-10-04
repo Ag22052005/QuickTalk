@@ -12,18 +12,6 @@ import Home from "./assets/screen/Home";
 import  { useAuthContext } from "./context/AuthContext.jsx";
 
 const App = () => {
-  const socket = io("http://localhost:3000");
-
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("connected", socket.id);
-    });
-
-    // Cleanup socket connection on unmount
-    return () => {
-      socket.disconnect();
-    };
-  }, [socket]);
 
   // Move useAuthContext here
   const { authUser } = useAuthContext();

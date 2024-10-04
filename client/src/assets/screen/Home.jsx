@@ -1,15 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import SideBar from "../components/SideBar";
 import ConversationArea from "../components/ConversationArea";
-import { useTabSwitchContext } from "../../context/TabSwitchContext";
-
+import { ChatContext } from "../../context/ChatContextProvider";
 function Home() {
-  const{currentTab,setCurrentTab} = useTabSwitchContext()
-  console.log("currentTab in home",currentTab)
+  const {currentReceiver} = useContext(ChatContext)
+  console.log("currentReceiver in home ",currentReceiver)
   return (
     <div className="artboard border-2 rounded-lg m-auto w-[80vw] h-[98vh] flex">
-      <SideBar className ={`${currentTab == 'sidebar'?"":"hide-container"}`} />
-      <ConversationArea className ={`${currentTab == 'sidebar'?"hide-container":""}`} />
+      <SideBar className ={` hide`} />
+      <ConversationArea className ={``} />
     </div>
   );
 }

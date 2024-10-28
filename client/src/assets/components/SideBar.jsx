@@ -1,37 +1,81 @@
 import React, { useContext, useEffect, useState } from "react";
 import { IoPersonAdd } from "react-icons/io5";
-import { MdFilterList } from "react-icons/md";
+import { MdFilterList, MdMoreVert } from "react-icons/md";
 import UserChatBox from "./UserChatBox";
 import AddContact from "./AddContact";
 import { SocketContext } from "../../context/SocketContextProvider";
 import { useAuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContextProvider";
+import { useNavigate } from "react-router-dom";
 
 function SideBar() {
   const { contacts } = useAuthContext();
   const [toggleAddContact, setToggleAddContact] = useState(false);
-  const {onlineUsers} = useContext(SocketContext)
+  const [showDropdown, setShowDropdown] = useState(false);
+  const { onlineUsers } = useContext(SocketContext);
   const { currentReceiver } = useContext(ChatContext);
-  console.log("Contacts : ",contacts)
+  const {authUser,setAuthUser} = useAuthContext()
+  const navigate = useNavigate();
+  
   useEffect(() => {
-    console.log("contacts in side bar ",contacts)
-  },[contacts,toggleAddContact]);
+    console.log("contacts in side bar ", contacts);
+  }, [contacts, toggleAddContact]);
 
   return (
     <>
-      <div className={`artboard w-full md:w-[35%] h-full rounded-lg overflow-hidden ${currentReceiver?"hidecontainer":""}`}>
+      <div className={`artboard w-full md:w-[35%] h-full rounded-lg overflow-hidden ${currentReceiver ? "hidecontainer" : ""}`}>
         <div className="mx-4 h-full flex flex-col">
           <div className="sideBar-header flex justify-between p-2">
             <h1 className="text-2xl">Chats</h1>
-            <div className="flex">
+            <div className="flex items-center gap-2 relative">
               <div
-                className="w-10 flex justify-center items-center text-2xl"
+                className="flex justify-center items-center text-2xl cursor-pointer"
                 onClick={() => setToggleAddContact(!toggleAddContact)}
               >
                 <IoPersonAdd />
               </div>
-              <div className="w-10 flex justify-center items-center text-2xl">
-                <MdFilterList />
+              <MdFilterList className="text-2xl cursor-pointer" />
+              
+              <div
+                className="relative"
+                onClick={() => setShowDropdown(!showDropdown)}
+              >
+                <MdMoreVert className="text-2xl cursor-pointer" />
+                {showDropdown && (
+                  <div className="absolute right-0 mt-2 w-40 bg-[#1d232a] rounded-md shadow-lg z-10">
+                    <ul className="py-2">
+                      <li
+                        className="px-4 py-2 hover:bg-slate-800 cursor-pointer"
+                        onClick={() => {
+                          // Handle profile settings
+                          setShowDropdown(false);
+                        }}
+                      >
+                        Profile
+                      </li>
+                      <li
+                        className="px-4 py-2 hover:bg-slate-800  cursor-pointer"
+                        onClick={() => {
+                          // Handle settings
+                          setShowDropdown(false);
+                        }}
+                      >
+                        Settings
+                      </li>
+                      <li
+                        className="px-4 py-2 hover:bg-slate-800  cursor-pointer text-red-500"
+                        onClick={() => {
+                          localStorage.removeItem("authToken");
+                          localStorage.removeItem("user");
+                          setAuthUser(null)
+                          navigate("/login");
+                        }}
+                      >
+                        Logout
+                      </li>
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -8,6 +8,11 @@
   }
   .homeScreen{
     width: 100% !important;
+    height: 95vh;
+  }
+  .conversationHead{
+    width: 98% !important;
+    border-radius: 2rem;
   }
 
   

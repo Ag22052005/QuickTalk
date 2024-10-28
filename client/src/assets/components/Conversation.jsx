@@ -62,11 +62,10 @@ const Conversation = () => {
   return (
     <>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 text-white fixed">
+      <div className="flex items-center justify-between p-4 text-white fixed z-50 w-[50.8%] backdrop-blur-md conversationHead">
         <div className="flex items-center space-x-3">
           <FaArrowLeft onClick={()=>{
             setCurrentReceiver(null)
-            // setCurrentConversation([])
             }}/>
           <div className="w-10 h-10 bg-gray-200 rounded-full"> 
             <img src="" alt="" />
@@ -78,7 +77,7 @@ const Conversation = () => {
             <p className="text-sm">{onlineUsers.includes(currentReceiver.userId)?"Online":"Offline"}</p>
           </div>
         </div>
-        <MdMoreVert className="text-2xl cursor-pointer" />
+        <MdMoreVert className="text-2xl cursor-pointer text-white" />
       </div>
 
       {/* Message Area */}

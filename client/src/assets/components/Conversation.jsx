@@ -81,7 +81,7 @@ const Conversation = () => {
       </div>
 
       {/* Message Area */}
-      <div className="flex-grow overflow-y-auto bg-gray-900 p-4">
+      <div className="flex-grow overflow-y-auto bg-gray-900 p-4 mt-14">
         <ul className="space-y-2">
           {currentConversation.map((message) => {
   console.log("currentConversation[currentConversation.length-1]",currentConversation?.[currentConversation.length-1].createdAt)

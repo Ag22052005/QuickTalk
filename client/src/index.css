@@ -6,8 +6,16 @@
   .hidecontainer{
     display: none !important;
   }
-  .hide{
-    display: none !important;
+  .homeScreen{
+    width: 100% !important;
   }
+
   
 }
+/* .hidecontainer{
+  display: none !important;
+} */
+
+/* .conversationArea{
+  display: none !important;
+} */

@@ -5,16 +5,21 @@ import UserChatBox from "./UserChatBox";
 import AddContact from "./AddContact";
 import { SocketContext } from "../../context/SocketContextProvider";
 import { useAuthContext } from "../../context/AuthContext";
+import { ChatContext } from "../../context/ChatContextProvider";
 
 function SideBar() {
   const { contacts } = useAuthContext();
   const [toggleAddContact, setToggleAddContact] = useState(false);
   const {onlineUsers} = useContext(SocketContext)
+  const { currentReceiver } = useContext(ChatContext);
   console.log("Contacts : ",contacts)
+  useEffect(() => {
+    console.log("contacts in side bar ",contacts)
+  },[contacts,toggleAddContact]);
 
   return (
     <>
-      <div className="artboard w-full md:w-[35%] h-full rounded-lg overflow-hidden">
+      <div className={`artboard w-full md:w-[35%] h-full rounded-lg overflow-hidden ${currentReceiver?"hidecontainer":""}`}>
         <div className="mx-4 h-full flex flex-col">
           <div className="sideBar-header flex justify-between p-2">
             <h1 className="text-2xl">Chats</h1>
@@ -48,7 +53,7 @@ function SideBar() {
           </label>
           <div className="flex-grow overflow-y-auto">
             {toggleAddContact ? (
-              <AddContact setToggleAddContact={setToggleAddContact} />
+              <AddContact setToggleAddContact={setToggleAddContact} toggleAddContact={toggleAddContact} />
             ) : (
               <ul className="w-auto">
                 {contacts.map((contact) => (

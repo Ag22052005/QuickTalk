@@ -6,9 +6,9 @@ function Home() {
   const {currentReceiver} = useContext(ChatContext)
   console.log("currentReceiver in home ",currentReceiver)
   return (
-    <div className="artboard border-2 rounded-lg m-auto w-[80vw] h-[98vh] flex">
-      <SideBar className ={` hide`} />
-      <ConversationArea className ={``} />
+    <div className="artboard border-2 rounded-lg m-auto w-[80vw] h-[99vh] flex homeScreen">
+      <SideBar />
+      <ConversationArea/>
     </div>
   );
 }

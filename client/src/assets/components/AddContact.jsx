@@ -1,9 +1,12 @@
 import axios from "axios";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { IoCall } from "react-icons/io5";
-function AddContact({ setToggleAddContact }) {
+import { useAuthContext } from "../../context/AuthContext";
+
+function AddContact({ setToggleAddContact ,toggleAddContact}) {
   const token = localStorage.getItem("authToken")
+  const { contacts,setContacts } = useAuthContext();
   const nameRef = useRef(null);
   const numberRef = useRef(null);
   const handleAddContactBtn = () => {
@@ -33,6 +36,20 @@ function AddContact({ setToggleAddContact }) {
       toast.error("Add the Credentials Carefully");
     }
   };
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_SERVER_URL}/userDetails`, {
+      headers: {
+        authorization: `bearer ${token}`,
+      },
+    }).then((res) => {
+      console.log("userDetails : ", res.data);
+      setContacts(res.data.contacts);
+    }).catch((error) => {
+      console.log("userDetails error", error);
+      toast.error("Internal Server Error");
+    });
+  },[setToggleAddContact,toggleAddContact]);
+
   return (
     <div className="px-10 py-4 border-2 border-gray-600 rounded-2xl">
       <h1 className="my-4 mx-auto">Add To Contact</h1>
@@ -62,7 +79,7 @@ function AddContact({ setToggleAddContact }) {
         />
       </label>
       <button className="btn btn-success w-full" onClick={handleAddContactBtn}>
-        Success
+        ADD
       </button>
     </div>
   );

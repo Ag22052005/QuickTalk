@@ -10,10 +10,11 @@ import toast from "react-hot-toast";
 import useListenMessage from "../hooks/useListenMessage";
 import { useAuthContext } from "../../context/AuthContext";
 import { SocketContext } from "../../context/SocketContextProvider";
+import { FaArrowLeft } from "react-icons/fa6";
 const Conversation = () => {
   useListenMessage();
   const token = localStorage.getItem("authToken");
-  const { currentConversation, setCurrentConversation, currentReceiver } =
+  const { currentConversation, setCurrentConversation, currentReceiver,setCurrentReceiver } =
     useContext(ChatContext);
   const { contacts } = useAuthContext();
   // console.log("Contacts : ", contacts);
@@ -63,7 +64,13 @@ const Conversation = () => {
       {/* Header */}
       <div className="flex items-center justify-between p-4 text-white">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+          <FaArrowLeft onClick={()=>{
+            setCurrentReceiver(null)
+            // setCurrentConversation([])
+            }}/>
+          <div className="w-10 h-10 bg-gray-200 rounded-full"> 
+            <img src="" alt="" />
+          </div>
           <div>
             <h1 className="text-lg font-semibold">
               {currentReceiver.contactName}

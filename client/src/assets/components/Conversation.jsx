@@ -62,7 +62,7 @@ const Conversation = () => {
   return (
     <>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 text-white">
+      <div className="flex items-center justify-between p-4 text-white fixed">
         <div className="flex items-center space-x-3">
           <FaArrowLeft onClick={()=>{
             setCurrentReceiver(null)

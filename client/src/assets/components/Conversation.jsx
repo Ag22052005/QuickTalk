@@ -28,9 +28,13 @@ const Conversation = () => {
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const [message, setMessage] = useState("");
 
+  // New state for the selected document
+  const [selectedDocument, setSelectedDocument] = useState(null);
+
   useEffect(() => {
     setTimeout(() => {
       lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
+      console.log("currentReceiver",currentReceiver)
     }, 100);
   }, [currentConversation]);
 
@@ -39,13 +43,14 @@ const Conversation = () => {
       axios
         .post(
           `${import.meta.env.VITE_SERVER_URL}/send/${currentReceiver.userId}`,
-          { message: message.trim() },
+          { message: message.trim(), document: selectedDocument }, // Include the document if present
           { headers: { authorization: `bearer ${token}` } }
         )
         .then((res) => {
           const newMessage = res.data;
           setCurrentConversation([...currentConversation, newMessage]);
           setMessage("");
+          setSelectedDocument(null); // Clear the document after sending
         })
         .catch((error) => {
           console.log("send msg error", error);
@@ -62,10 +67,17 @@ const Conversation = () => {
     console.log("Audio recording feature triggered.");
   };
 
+  const handleDocumentChange = (event) => {
+    const file = event.target.files[0]; // Get the first file
+    if (file) {
+      setSelectedDocument(file); // Set the selected document
+    }
+  };
+
   return (
     <>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 text-white fixed z-50 w-full backdrop-blur-md conversationHead">
+      <div className="flex items-center justify-between p-4 text-white fixed top-2 z-50 w-[50%] backdrop-blur-md conversationHead ">
         <div className="flex items-center space-x-3">
           <FaArrowLeft onClick={() => setCurrentReceiver(null)} />
           <div className="w-10 h-10 bg-gray-200 rounded-full">
@@ -98,7 +110,7 @@ const Conversation = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: -10 }}
             exit={{ opacity: 0, y: 10 }}
-            className="absolute bottom-16 left-2 z-50 bg-gray-800 rounded-lg shadow-lg"
+            className="absolute bottom-16 left-2 z-50"
           >
             <EmojiPicker onEmojiClick={handleEmojiClick} />
           </motion.div>
@@ -129,8 +141,17 @@ const Conversation = () => {
               <span>Contact</span>
             </div>
             <div className="flex flex-col items-center text-sm text-white">
-              <FaFileAlt className="text-purple-500 text-xl" />
-              <span>Document</span>
+            <label className="cursor-pointer flex flex-col items-center text-sm">
+                <FaFileAlt className="text-purple-500 text-xl" />
+                <span>Document</span>
+                {/* Hidden file input */}
+                <input
+                  type="file"
+                  accept=".pdf, .doc, .docx, .txt" // Specify acceptable file types
+                  onChange={handleDocumentChange}
+                  className="hidden" // Hide the file input
+                />
+              </label>
             </div>
             <div className="flex flex-col items-center text-sm text-white">
               <FaHeadphones className="text-orange-500 text-xl" />
@@ -146,6 +167,7 @@ const Conversation = () => {
             </div>
           </motion.div>
         )}
+       
 
         <button className="w-10 ml-2" onClick={() => setIsEmojiPickerOpen((prev) => !prev)}>
           <BsEmojiSmile />
@@ -155,7 +177,7 @@ const Conversation = () => {
         </button>
         <input
           type="text"
-          className="flex-grow p-2 border rounded-lg outline-none bg-gray-800 text-white"
+          className="flex-grow p-2 border rounded-lg outline-none"
           placeholder="Type a message..."
           ref={inputMessageRef}
           value={message}

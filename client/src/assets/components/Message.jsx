@@ -30,7 +30,7 @@ const Message = memo(({ message }) => {
     : message.senderProfileImage;
 
   return (
-    <div className={`chat ${chatSide}`}>
+    <div className={`chat ${chatSide} `}>
       <div className="chat-image avatar">
         <div className="w-10 rounded-full">
           <img
@@ -40,7 +40,7 @@ const Message = memo(({ message }) => {
         </div>
       </div>
       <div>
-        <div className="chat-bubble pb-6">
+        <div className={`chat-bubble pb-6 ${chatSide==="chat-start" ?"bg-blue-700":"bg-black"}`}>
           {message.message}
           <time className="text-xs opacity-50 float-right">
             {convertToIST(message.createdAt)}

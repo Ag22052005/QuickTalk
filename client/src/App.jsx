@@ -10,6 +10,7 @@ import SignUp from "./assets/components/SignUp";
 import SignIn from "./assets/components/SignIn";
 import Home from "./assets/screen/Home";
 import  { useAuthContext } from "./context/AuthContext.jsx";
+import SelectAvatar from "./assets/screen/SelectAvatar.jsx";
 
 const App = () => {
 
@@ -20,6 +21,10 @@ const App = () => {
     {
       path: "/",
       element: authUser ? <Home /> : <Navigate to={"/login"} />,
+    },
+    {
+      path:"/select-avatar",
+      element:<SelectAvatar/>
     },
     {
       path: "/login",

@@ -20,7 +20,7 @@ function UserChatBox({ contact }) {
   // console.log("CurrentConversation in userchatbox", currentConversation);
   return (
     <li
-      className={` w-full flex justify-between my-3 ${currentContact?"bg-slate-900":"hover:bg-slate-800"} `}
+      className={` w-full flex justify-between my-3 rounded-tl-3xl rounded-bl-3xl ${currentContact?"bg-zinc-900":"hover:bg-zinc-800"} `}
       onClick={handleCurrentReceiver}
     >
       <div className="flex ">

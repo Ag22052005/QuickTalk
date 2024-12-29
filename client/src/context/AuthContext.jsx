@@ -18,7 +18,7 @@ const AuthContextProvider = ({ children }) => {
   useEffect(()=>{
     setContacts(authUser?.contacts)
   },[authUser])
-  console.log("authUser in context :  ",authUser)
+  // console.log("authUser in context :  ",authUser)
 
   return (
     <authContext.Provider value={{ authUser, setAuthUser,contacts,setContacts }}>

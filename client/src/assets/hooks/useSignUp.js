@@ -18,7 +18,7 @@ const useSignup =() => {
       localStorage.setItem('authToken',res.data.authToken)
       setLoading(false)
       toast.success("Sign Up Successfully")
-      navigate('/');
+      navigate('/select-avatar');
     }).catch((error)=>{
       setLoading(false)
       console.log("sign Up error ",error)

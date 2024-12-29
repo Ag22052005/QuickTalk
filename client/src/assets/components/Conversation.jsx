@@ -92,7 +92,7 @@ const Conversation = () => {
       </div>
 
       {/* Message Area */}
-      <div className="flex-grow overflow-y-auto bg-gray-900 p-4 mt-14">
+      <div className="flex-grow overflow-y-auto bg-gray-900 p-4 mt-20">
         <ul className="space-y-2">
           {currentConversation.map((message) => (
             <div key={message._id} ref={lastMessageRef}>

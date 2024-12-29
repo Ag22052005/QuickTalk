@@ -4,6 +4,8 @@ const User = require("../models/user.model");
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const Chat = require("../models/chat.model");
+const {io, getReceiverSocketId} = require('./../socket/socket')
+
 
 const userDetails = async(req,res)=>{
   try {
@@ -18,49 +20,53 @@ const userDetails = async(req,res)=>{
   }
 }
 
-const addContact = async(req,res)=>{
+const addContact = async (req, res) => {
   try {
-    const {contactNumber,contactName} = req.body
+    const { contactNumber, contactName } = req.body;
     const senderId = req.user.userId;
-    const senderObjectId = new mongoose.Types.ObjectId(senderId)
-    const friend = await User.findOne({phoneNumber:contactNumber});
-    console.log('friend : ',friend)
-    if(!friend){
-      res.send("User is not on chatApp");
-      return;
+    const senderObjectId = new mongoose.Types.ObjectId(senderId);
+    
+    const friend = await User.findOne({ phoneNumber: contactNumber });
+    if (!friend) {
+      return res.status(404).send("User is not on chatApp");
     }
-    // console.log(senderId)
-    // console.log(senderObjectId)
-    const senderData = await User.findOne({_id:senderObjectId})
-    // console.log("senderData : ",senderData)
-    if(!senderData){
-      res.send("not added")
-      return;
-    }
-    let isAlreadyAdded = false;
-    senderData.contacts.forEach((f)=>{
-      if(f.userId == friend._id ) {
-        isAlreadyAdded = true;
-        return;
-      }
-    })
-    if(isAlreadyAdded) {
-      res.send("The Contact is Already there in your chatList")
-      return;
-    }
-    senderData.contacts.push({userId:friend._id,contactName})
-    const updatedSender = await senderData.save()
-    const participants = [senderId,friend._id]
-    const newConversation = await Chat.create({participants})
-    const response = await newConversation.save();
-    // console.log('addContact response :',response)
-    res.send("add successfully")
 
+    const senderData = await User.findById(senderObjectId);
+    if (!senderData) {
+      return res.status(404).send("Sender not found");
+    }
+
+    const isAlreadyAdded = senderData.contacts.some(f => f.userId.equals(friend._id));
+    if (isAlreadyAdded) {
+      console.log("The Contact is Already there in your chatList");
+      return res.status(400).send("The Contact is Already there in your chatList");
+    }
+
+    // Add the new contact
+    senderData.contacts.push({ userId: friend._id, contactName });
+    await senderData.save();
+
+    // Check if a chat already exists between the sender and the friend
+    const existingChat = await Chat.findOne({
+      participants: { $all: [senderObjectId, friend._id] }
+    });
+
+    if (!existingChat) {
+      // Create a new conversation only if it doesn't exist
+      const participants = [senderId, friend._id];
+      await Chat.create({ participants });
+    }
+
+    // Emit the new contact to the sender
+    io.to(getReceiverSocketId(senderObjectId)).emit("newContact",senderData.contacts[senderData.contacts.length - 1]);
+    res.send("Added successfully");
   } catch (e) {
-    console.log("Add to contact in userController : ",e)
+    console.log("Add to contact in userController : ", e);
     res.status(500).json({ status: "internal error", error: e });
   }
-}
+};
+
+
 const signUp = async (req, res) => {
   try {
     // console.log("hereererere")

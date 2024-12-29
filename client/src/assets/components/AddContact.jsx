@@ -1,54 +1,10 @@
-import axios from "axios";
-import React, { useEffect, useRef } from "react";
-import toast from "react-hot-toast";
+import React from "react";
 import { IoCall } from "react-icons/io5";
-import { useAuthContext } from "../../context/AuthContext";
+import useAddContacts from "../hooks/useAddContacts";
 
-function AddContact({ setToggleAddContact ,toggleAddContact}) {
-  const token = localStorage.getItem("authToken")
-  const { contacts,setContacts } = useAuthContext();
-  const nameRef = useRef(null);
-  const numberRef = useRef(null);
-  const handleAddContactBtn = () => {
-    let name = nameRef.current.value;
-    let number = numberRef.current.value;
-    if (name.trim() != "" && number.trim() != "") {
-      if (number.length != 10)
-        return toast.error("Enter the 10 Digit Contact Number");
-      axios.post(
-        `${import.meta.env.VITE_SERVER_URL}/addContact`,
-        {
-          contactName: name,
-          contactNumber: number,
-        },
-        {
-          headers: {
-            authorization: `bearer ${token}`,
-          },
-        }
-      ).then((res)=>{
-        setToggleAddContact(p => !p)
-      }).catch((error)=>{
-        console.log("add to contact error", error)
-        toast.error("Internal Server Error")
-      })
-    } else {
-      toast.error("Add the Credentials Carefully");
-    }
-  };
-  useEffect(() => {
-    axios.get(`${import.meta.env.VITE_SERVER_URL}/userDetails`, {
-      headers: {
-        authorization: `bearer ${token}`,
-      },
-    }).then((res) => {
-      console.log("userDetails : ", res.data);
-      setContacts(res.data.contacts);
-    }).catch((error) => {
-      console.log("userDetails error", error);
-      toast.error("Internal Server Error");
-    });
-  },[setToggleAddContact,toggleAddContact]);
+
+function AddContact({ setToggleAddContact }) {
+  const { nameRef, numberRef, handleAddContactBtn } = useAddContacts(setToggleAddContact);
 
   return (
     <div className="px-10 py-4 border-2 border-gray-600 rounded-2xl">

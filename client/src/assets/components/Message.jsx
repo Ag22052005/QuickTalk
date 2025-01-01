@@ -1,6 +1,6 @@
 import React, { useState, useEffect, memo } from "react";
 import { useAuthContext } from "../../context/AuthContext";
-
+import dp from "../images/dp.png"
 export function convertToIST(utcDateString) {
   const date = new Date(utcDateString);
   return date.toLocaleTimeString('en-IN', { 
@@ -32,18 +32,18 @@ const Message = memo(({ message,ReceiverForProfilePic }) => {
   return (
     <div className={`chat ${chatSide} `}>
       <div className="chat-image avatar">
-        <div className="w-10 rounded-full">
+        <div className="w-10 rounded-full ">
           <img
             alt="Avatar"
-            src={avatarUrl || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"}
+            src={avatarUrl || dp}
           />
         </div>
       </div>
-      <div>
-        <div className={`chat-bubble pb-6 ${chatSide==="chat-end" ?"bg-blue-700":"bg-black"}`}>
-          {message.message}
-          <time className="text-xs opacity-50 float-right text-white">
-            {convertToIST(message.createdAt)}
+      <div className=" max-w-[90%]">
+        <div className={`chat-bubble pb-6 ${chatSide==="chat-end" ?"bg-blue-700":"bg-black"} min-w-full`}>
+          <p> {message.message}</p>
+          <time className="text-xs opacity-50 float-right text-white w-8 ">
+            <p> {convertToIST(message.createdAt)}</p>
           </time>
         </div>
       </div>

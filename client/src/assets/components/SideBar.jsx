@@ -7,7 +7,6 @@ import { SocketContext } from "../../context/SocketContextProvider";
 import { useAuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContextProvider";
 import { useNavigate } from "react-router-dom";
-
 function SideBar() {
   const { contacts } = useAuthContext();
   const [toggleAddContact, setToggleAddContact] = useState(false);

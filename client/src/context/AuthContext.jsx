@@ -13,11 +13,13 @@ export const useAuthContext = () => {
 
 const AuthContextProvider = ({ children }) => {
   const token = localStorage.getItem("authToken");
+  const [fetchAuthUser,setFetchAuthUser] = useState(false)
   const [authUser, setAuthUser] = useState(
     JSON.parse(localStorage.getItem("user")) || null
   );
   const [contacts, setContacts] = useState([]);
   useEffect(()=>{
+    console.log("fetching contacts .......")
     if(authUser)
     axios.get(
       `${import.meta.env.VITE_SERVER_URL}/getcontacts`,
@@ -26,11 +28,11 @@ const AuthContextProvider = ({ children }) => {
       const user = res.data;
       setContacts(user.contacts)
     })
-  },[authUser])
+  },[authUser,fetchAuthUser])
   console.log("contacts in Authcontext :  ", contacts)
 
   return (
-    <authContext.Provider value={{ authUser, setAuthUser,contacts,setContacts }}>
+    <authContext.Provider value={{ authUser, setAuthUser,contacts,setContacts,fetchAuthUser,setFetchAuthUser }}>
       {children}
     </authContext.Provider>
   );

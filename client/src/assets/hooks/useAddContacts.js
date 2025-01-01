@@ -8,7 +8,7 @@ import { SocketContext } from "../../context/SocketContextProvider";
 const useAddContacts = (setToggleAddContact) => {
   const { socket } = useContext(SocketContext);
   const token = localStorage.getItem("authToken");
-  const { setContacts } = useAuthContext();
+  const { setContacts ,fetchAuthUser, setFetchAuthUser} = useAuthContext();
   const nameRef = useRef(null);
   const numberRef = useRef(null);
 
@@ -25,7 +25,9 @@ const useAddContacts = (setToggleAddContact) => {
         { headers: { authorization: `bearer ${token}` } }
       )
       .then(() => {
+        console.log("Contact is added  !!!")
         setToggleAddContact(prev => !prev);
+        setFetchAuthUser(prev => !prev);
       })
       .catch(error => {
         if (error.response && error.response.data === "The Contact is Already there in your chatList") {

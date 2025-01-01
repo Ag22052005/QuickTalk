@@ -1,43 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Blocks } from "react-loader-spinner";
-import useSelectAvatar from "../hooks/useSelectAvatar";
+import { updateAvatar } from "../store/Avatar";
+import useGetAvatar from "../hooks/useGetAvatar";
 
 const SelectAvatar = () => {
-  const [avatars, setAvatars] = useState([]);
-  const { loading, updateAvatar } = useSelectAvatar();
-
-  const urls = [
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-    "https://avatar.iran.liara.run/public",
-  ];
-  const getAvatars = () => {
-    Promise.allSettled(urls.map((url) => fetch(url))).then((results) => {
-      const avt = results.map((result) => {
-        // console.log(result)
-        if (result.status === "fulfilled") return result.value.url;
-      });
-      setAvatars(avt);
-    });
-  };
+  const {avatars,getAvatars} = useGetAvatar();
   useEffect(() => {
     getAvatars();
   }, []);
@@ -54,7 +22,11 @@ const SelectAvatar = () => {
           ) : (
             <ul className="flex flex-wrap justify-between gap-8 avatar-ul">
               {avatars.map((avatar, index) => (
-                <Link to = "/" key={index}  onClick={(e) => updateAvatar(e.target.src)}>
+                <Link
+                  to="/"
+                  key={index}
+                  onClick={(e) => updateAvatar(e.target.src)}
+                >
                   <img
                     src={avatar}
                     className="w-[50px] h-[50px]"

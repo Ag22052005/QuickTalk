@@ -14,6 +14,7 @@ import { SocketContext } from "../../context/SocketContextProvider";
 import { FaArrowLeft } from "react-icons/fa6";
 import { motion } from "framer-motion";
 import EmojiPicker from "emoji-picker-react";
+import dp from '../images/dp.png'
 
 const Conversation = () => {
   useListenMessage();
@@ -36,7 +37,7 @@ const Conversation = () => {
   useEffect(() => {
     setTimeout(() => {
       lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
-      // console.log("currentReceiver",currentReceiver)
+      console.log("currentReceiver",currentReceiver)
     }, 100);
   }, [currentConversation]);
 
@@ -56,7 +57,7 @@ const Conversation = () => {
         })
         .catch((error) => {
           console.log("send msg error", error);
-          toast.error("Internal Server Error");
+          toast.error("Error :", error.message);
         });
     }
   };
@@ -83,7 +84,7 @@ const Conversation = () => {
         <div className="flex items-center space-x-3">
           <FaArrowLeft onClick={() => setCurrentReceiver(null)} />
           <div className="w-10 h-10 bg-gray-200 rounded-full">
-            <img src={authUser.profilePic} alt="" />
+            <img src={currentReceiver.userId.profilePic || dp} className="rounded-full" alt="profile pic" />
           </div>
           <div>
             <h1 className="text-lg font-semibold">{currentReceiver.contactName}</h1>

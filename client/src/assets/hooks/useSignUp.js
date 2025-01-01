@@ -2,11 +2,13 @@ import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../../context/AuthContext";
 
 
 const useSignup =() => {
   const [loading,setLoading] = useState(false)
   const navigate = useNavigate()
+  const {setAuthUser} = useAuthContext()
   const signup = ({name,phoneNumber,password})=>{
 
     setLoading(true)
@@ -16,6 +18,8 @@ const useSignup =() => {
       console.log(res.data)
       localStorage.setItem('user',JSON.stringify(res.data.user))
       localStorage.setItem('authToken',res.data.authToken)
+      setAuthUser(res.data.user)
+      
       setLoading(false)
       toast.success("Sign Up Successfully")
       navigate('/select-avatar');

@@ -18,7 +18,7 @@ function SideBar() {
   const navigate = useNavigate();
   
   useEffect(() => {
-    console.log("contacts in side bar ", contacts);
+    // console.log("contacts in side bar ", contacts);
   }, [contacts, toggleAddContact]);
 
   return (
@@ -101,7 +101,7 @@ function SideBar() {
             ) : (
               <ul className="w-auto">
                 {contacts.map((contact) => (
-                  <UserChatBox key={contact.userId} contact={contact} />
+                  <UserChatBox key={contact.userId._id} contact={contact} />
                 ))}
               </ul>
             )}

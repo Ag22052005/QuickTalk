@@ -8,14 +8,14 @@ import { useTabSwitchContext } from "../../context/TabSwitchContext";
 function UserChatBox({ contact }) {
   const { setCurrentReceiver,currentReceiver, currentConversation } = useContext(ChatContext);
   const { onlineUsers } = useContext(SocketContext);
-  const isOnline = onlineUsers.includes(contact.userId);
+  const isOnline = onlineUsers.includes(contact.userId._id);
   const{currentTab,setCurrentTab} = useTabSwitchContext()
-  const currentContact= currentReceiver?.userId == contact.userId
+  const currentContact= currentReceiver?.userId == contact.userId._id
   const handleCurrentReceiver = () => {
     setCurrentReceiver(contact);
     setCurrentTab('chat');
   };
-  // console.log("userchatbox", contact);
+  console.log("userchatbox", contact);
   // console.log("userchatbox Online users", onlineUsers);
   // console.log("CurrentConversation in userchatbox", currentConversation);
   return (
@@ -27,7 +27,7 @@ function UserChatBox({ contact }) {
         <div className="img">
           {isOnline ? <FaCircle className="fixed text-green-500" /> : null}
           <img
-            src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+            src={ `${contact.userId.profilePic === '' ?"https://cdn-icons-png.flaticon.com/512/3135/3135715.png":contact.userId.profilePic}`}
             alt=""
             className="w-[50px] h-[50px] object-cover"
           />

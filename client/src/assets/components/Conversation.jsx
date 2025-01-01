@@ -19,7 +19,7 @@ const Conversation = () => {
   useListenMessage();
   const token = localStorage.getItem("authToken");
   const { currentConversation, setCurrentConversation, currentReceiver, setCurrentReceiver } = useContext(ChatContext);
-  const { contacts } = useAuthContext();
+  const { contacts,authUser } = useAuthContext();
   const lastMessageRef = useRef(null);
   const inputMessageRef = useRef(null);
   const { onlineUsers } = useContext(SocketContext);
@@ -30,11 +30,13 @@ const Conversation = () => {
 
   // New state for the selected document
   const [selectedDocument, setSelectedDocument] = useState(null);
-
+  // console.log(contacts)
+  const ReceiverForProfilePic = contacts.find((contact) => contact.userId._id === currentReceiver.userId._id);
+  // console.log("result",result)
   useEffect(() => {
     setTimeout(() => {
       lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
-      console.log("currentReceiver",currentReceiver)
+      // console.log("currentReceiver",currentReceiver)
     }, 100);
   }, [currentConversation]);
 
@@ -42,7 +44,7 @@ const Conversation = () => {
     if (message.trim() !== "") {
       axios
         .post(
-          `${import.meta.env.VITE_SERVER_URL}/send/${currentReceiver.userId}`,
+          `${import.meta.env.VITE_SERVER_URL}/send/${currentReceiver.userId._id}`,
           { message: message.trim(), document: selectedDocument }, // Include the document if present
           { headers: { authorization: `bearer ${token}` } }
         )
@@ -81,11 +83,11 @@ const Conversation = () => {
         <div className="flex items-center space-x-3">
           <FaArrowLeft onClick={() => setCurrentReceiver(null)} />
           <div className="w-10 h-10 bg-gray-200 rounded-full">
-            <img src="" alt="" />
+            <img src={authUser.profilePic} alt="" />
           </div>
           <div>
             <h1 className="text-lg font-semibold">{currentReceiver.contactName}</h1>
-            <p className="text-sm">{onlineUsers.includes(currentReceiver.userId) ? "Online" : "Offline"}</p>
+            <p className="text-sm">{onlineUsers.includes(currentReceiver.userId._id) ? "Online" : "Offline"}</p>
           </div>
         </div>
         <MdMoreVert className="text-2xl cursor-pointer text-white" />
@@ -96,7 +98,7 @@ const Conversation = () => {
         <ul className="space-y-2">
           {currentConversation.map((message) => (
             <div key={message._id} ref={lastMessageRef}>
-              <Message message={message} />
+              <Message message={message} ReceiverForProfilePic={ReceiverForProfilePic}/>
             </div>
           ))}
         </ul>

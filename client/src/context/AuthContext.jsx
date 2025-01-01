@@ -1,3 +1,4 @@
+import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 
 export const authContext = createContext();
@@ -11,14 +12,22 @@ export const useAuthContext = () => {
 };
 
 const AuthContextProvider = ({ children }) => {
+  const token = localStorage.getItem("authToken");
   const [authUser, setAuthUser] = useState(
     JSON.parse(localStorage.getItem("user")) || null
   );
-  const [contacts, setContacts] = useState(JSON.parse(localStorage.getItem("user"))?.contacts||[]);
+  const [contacts, setContacts] = useState([]);
   useEffect(()=>{
-    setContacts(authUser?.contacts)
+    if(authUser)
+    axios.get(
+      `${import.meta.env.VITE_SERVER_URL}/getcontacts`,
+      { headers: { authorization: `bearer ${token}` } }
+    ).then(res => {
+      const user = res.data;
+      setContacts(user.contacts)
+    })
   },[authUser])
-  // console.log("authUser in context :  ",authUser)
+  console.log("contacts in Authcontext :  ", contacts)
 
   return (
     <authContext.Provider value={{ authUser, setAuthUser,contacts,setContacts }}>

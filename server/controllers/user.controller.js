@@ -66,6 +66,17 @@ const addContact = async (req, res) => {
   }
 };
 
+const getContacts =async (req, res)=>{
+  const {userId} = req.user;
+  // console.log(userId)
+  const userwithPopulate = await User.findOne({_id:userId}).populate({
+    path: "contacts.userId", // Path to populate
+    select: "name phoneNumber profilePic" // Fields to include from the referenced User
+  });
+  
+  res.status(200).json(userwithPopulate)
+}
+
 
 const signUp = async (req, res) => {
   try {
@@ -92,7 +103,7 @@ const signUp = async (req, res) => {
     };
     const authToken = jwt.sign(payload, process.env.JWT_KEY);
     // console.log(authToken);
-    res.status(200).json({ user, authToken: authToken });
+    res.status(200).json({ user:response, authToken: authToken });
 
   } catch (e) {
     console.log(e);
@@ -134,5 +145,12 @@ const login = async (req, res) => {
   }
 };
 
+const updateAvatar = async (req,res)=>{
+  const {phoneNumber,url }  = req.body
+  console.log(phoneNumber,url)
+  const user = await User.findOneAndUpdate({phoneNumber},{$set:{profilePic:url}},{new:true})
+  res.status(200).json(user);
+}
 
-module.exports = { signUp, login,addContact,userDetails };
+
+module.exports = { signUp, login,addContact,userDetails,updateAvatar ,getContacts};

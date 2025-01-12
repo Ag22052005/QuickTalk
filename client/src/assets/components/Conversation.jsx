@@ -37,7 +37,7 @@ const Conversation = () => {
   useEffect(() => {
     setTimeout(() => {
       lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
-      console.log("currentReceiver",currentReceiver)
+      // console.log("currentReceiver",currentReceiver)
     }, 100);
   }, [currentConversation]);
 
@@ -83,8 +83,8 @@ const Conversation = () => {
       <div className="flex items-center justify-between p-4 text-white fixed top-2 z-50 w-[50%] backdrop-blur-md conversationHead ">
         <div className="flex items-center space-x-3">
           <FaArrowLeft onClick={() => setCurrentReceiver(null)} />
-          <div className="w-10 h-10 bg-gray-200 rounded-full">
-            <img src={currentReceiver.userId.profilePic || dp} className="rounded-full" alt="profile pic" />
+          <div className="bg-gray-200 rounded-full ">
+            <img src={currentReceiver.userId.profilePic || dp} className="w-[40px] h-[40px] object-cover rounded-full" alt="profile pic" />
           </div>
           <div>
             <h1 className="text-lg font-semibold">{currentReceiver.contactName}</h1>

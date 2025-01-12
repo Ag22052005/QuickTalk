@@ -22,7 +22,7 @@ const useSignup =() => {
       
       setLoading(false)
       toast.success("Sign Up Successfully")
-      navigate('/select-avatar');
+      navigate('/');
     }).catch((error)=>{
       setLoading(false)
       console.log("sign Up error ",error)

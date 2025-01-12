@@ -11,7 +11,7 @@ function UserChatBox({ contact }) {
   const isOnline = onlineUsers.includes(contact.userId._id);
   const{currentTab,setCurrentTab} = useTabSwitchContext()
   const currentContact= currentReceiver?.userId._id === contact.userId._id
-  console.log(currentContact)
+  // console.log("current contact for ",currentReceiver,contact,currentContact)
   const handleCurrentReceiver = () => {
     setCurrentReceiver(contact);
     setCurrentTab('chat');
@@ -20,7 +20,7 @@ function UserChatBox({ contact }) {
   // console.log("userchatbox Online users", onlineUsers);
   // console.log("CurrentConversation in userchatbox", currentConversation);
   return (
-    <li
+    <div
       className={` w-full flex justify-between my-3 rounded-tl-3xl rounded-bl-3xl ${currentContact?"bg-zinc-900":"hover:bg-zinc-800"} `}
       onClick={handleCurrentReceiver}
     >
@@ -40,7 +40,7 @@ function UserChatBox({ contact }) {
       {/* <div className="flex justify-center items-center mr-4">
 
       </div> */}
-    </li>
+    </div>
   );
 }
 

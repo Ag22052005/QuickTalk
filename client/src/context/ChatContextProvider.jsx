@@ -17,7 +17,8 @@ export const ChatContextProvider=({children})=>{
   const [currentConversation,setCurrentConversation] = useState([])
   const token = localStorage.getItem("authToken");
   useEffect(()=>{
-    if(currentReceiver!=null){
+    if(currentReceiver!=null && currentReceiver!=""){
+      console.log("currentReceiver in chatContextProvider" ,currentReceiver)
       axios.get(`${import.meta.env.VITE_SERVER_URL}/get-chats/${currentReceiver.userId._id}`,{
         headers:{
           authorization:`bearer ${token}`

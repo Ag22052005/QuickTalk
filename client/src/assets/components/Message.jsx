@@ -14,7 +14,7 @@ export function convertToIST(utcDateString) {
 const Message = memo(({ message,ReceiverForProfilePic }) => {
   const [chatSide, setChatSide] = useState("");
   const { authUser } = useAuthContext();
-  console.log("message",message)
+  // console.log("message",message)
   useEffect(() => {
     if (authUser?._id) {
       if (message.senderId === authUser._id) {
@@ -24,7 +24,7 @@ const Message = memo(({ message,ReceiverForProfilePic }) => {
       }
     }
   }, [message.senderId, authUser]);
-  console.log("authUser in message component",authUser)
+  // console.log("authUser in message component",authUser)
   const avatarUrl = message.senderId === authUser?._id
     ? authUser.profilePic
     : ReceiverForProfilePic.userId.profilePic;
@@ -32,7 +32,7 @@ const Message = memo(({ message,ReceiverForProfilePic }) => {
   return (
     <div className={`chat ${chatSide} `}>
       <div className="chat-image avatar">
-        <div className="w-10 rounded-full ">
+        <div className="w-10 rounded-full object-cover">
           <img
             alt="Avatar"
             src={avatarUrl || dp}

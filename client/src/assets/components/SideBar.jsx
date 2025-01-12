@@ -12,29 +12,38 @@ function SideBar() {
   const [toggleAddContact, setToggleAddContact] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const { onlineUsers } = useContext(SocketContext);
-  const { currentReceiver } = useContext(ChatContext);
-  const {authUser,setAuthUser} = useAuthContext()
+  const { currentReceiver, setCurrentReceiver } = useContext(ChatContext);
+  const { authUser, setAuthUser } = useAuthContext();
   const navigate = useNavigate();
-  
+
   useEffect(() => {
-    // console.log("contacts in side bar ", contacts);
+    console.log("contacts in side bar ", contacts);
+    // setCurrentReceiver(null);
+    console.log("currentReceiver",currentReceiver);
   }, [contacts, toggleAddContact]);
 
   return (
     <>
-      <div className={`artboard w-full md:w-[35%] h-full rounded-lg overflow-hidden ${currentReceiver ? "hidecontainer" : ""}`}>
+      <div
+        className={`artboard w-full md:w-[35%] h-full rounded-lg overflow-hidden ${
+          currentReceiver ? "hidecontainer" : ""
+        }`}
+      >
         <div className="mx-4 h-full flex flex-col">
           <div className="sideBar-header flex justify-between p-2">
             <h1 className="text-2xl">Chats</h1>
             <div className="flex items-center gap-2 relative">
               <div
                 className="flex justify-center items-center text-2xl cursor-pointer"
-                onClick={() => setToggleAddContact(!toggleAddContact)}
+                onClick={() => {
+                  setCurrentReceiver(null)
+                  setToggleAddContact(!toggleAddContact);
+                }}
               >
                 <IoPersonAdd />
               </div>
               <MdFilterList className="text-2xl cursor-pointer" />
-              
+
               <div
                 className="relative"
                 onClick={() => setShowDropdown(!showDropdown)}
@@ -66,7 +75,7 @@ function SideBar() {
                         onClick={() => {
                           localStorage.removeItem("authToken");
                           localStorage.removeItem("user");
-                          setAuthUser(null)
+                          setAuthUser(null);
                           navigate("/login");
                         }}
                       >
@@ -96,11 +105,16 @@ function SideBar() {
           </label>
           <div className="flex-grow overflow-y-auto">
             {toggleAddContact ? (
-              <AddContact setToggleAddContact={setToggleAddContact} toggleAddContact={toggleAddContact} />
+              <AddContact
+                setToggleAddContact={setToggleAddContact}
+                toggleAddContact={toggleAddContact}
+              />
             ) : (
               <ul className="w-auto">
                 {contacts.map((contact) => (
-                  <UserChatBox key={contact.userId._id} contact={contact} />
+                  <div key={contact._id}>
+                    <UserChatBox contact={contact} />
+                  </div>
                 ))}
               </ul>
             )}

@@ -95,6 +95,10 @@ const signUp = async (req, res) => {
     const hashedpassword = await bcrypt.hash(data.password, SALT);
     data.password = hashedpassword;
     // console.log(data);
+
+    // Adding Profile pic
+
+    
     const user = new User(data);
     const response = await user.save();
     console.log("User is created");
@@ -132,7 +136,12 @@ const login = async (req, res) => {
     };
     const authToken = jwt.sign(payload, process.env.JWT_KEY);
     // console.log(authToken);
-    res.status(200).json({ user: isUser, authToken: authToken });
+    const populateUser = await isUser.populate({
+      path: "contacts.userId", // Path to populate
+      select: "name phoneNumber profilePic" // Fields to include from the referenced User
+    });
+    // console.log(populateUser)
+    res.status(200).json({ user: populateUser, authToken: authToken });
   } catch (error) {
     console.log("login Error ", error)
     if (error.message === "User Not Found")
@@ -152,5 +161,19 @@ const updateAvatar = async (req,res)=>{
   res.status(200).json(user);
 }
 
+const UploadProfliePic = async (req,res)=>{
+  const userId = req.user.userId
+  console.log("userId", userId)
+  const id = new mongoose.Types.ObjectId(userId);
+  const secure_url = req.uploadResult.secure_url
+  const user = await User.findOneAndUpdate(
+    { _id: id },
+    { profilePic: secure_url},
+    { new: true, runValidators: true }
+  );
+  console.log("Profile url is updated")
+  res.status(200).json(user);
+}
 
-module.exports = { signUp, login,addContact,userDetails,updateAvatar ,getContacts};
+
+module.exports = { signUp, login,addContact,userDetails,updateAvatar ,getContacts,UploadProfliePic};

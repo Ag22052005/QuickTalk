@@ -22,10 +22,10 @@ const App = () => {
       path: "/",
       element: authUser ? <Home /> : <Navigate to={"/login"} />,
     },
-    {
-      path:"/select-avatar",
-      element:<SelectAvatar/>
-    },
+    // {
+    //   path:"/select-avatar",
+    //   element:<SelectAvatar/>
+    // },
     {
       path: "/login",
       element: authUser ? <Navigate to={"/"} /> : <SignIn />,

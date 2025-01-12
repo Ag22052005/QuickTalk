@@ -17,19 +17,20 @@ const AuthContextProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(
     JSON.parse(localStorage.getItem("user")) || null
   );
-  const [contacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useState(authUser.contacts || []);
   useEffect(()=>{
-    console.log("fetching contacts .......")
+    // console.log("fetching contacts .......")
     if(authUser)
     axios.get(
       `${import.meta.env.VITE_SERVER_URL}/getcontacts`,
       { headers: { authorization: `bearer ${token}` } }
-    ).then(res => {
+    ).then(res => { 
       const user = res.data;
+      console.log("user.contacts :",user.contacts)
       setContacts(user.contacts)
     })
   },[authUser,fetchAuthUser])
-  console.log("contacts in Authcontext :  ", contacts)
+  // console.log("contacts in Authcontext :  ", contacts)
 
   return (
     <authContext.Provider value={{ authUser, setAuthUser,contacts,setContacts,fetchAuthUser,setFetchAuthUser }}>

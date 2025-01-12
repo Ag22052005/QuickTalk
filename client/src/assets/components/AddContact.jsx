@@ -1,10 +1,11 @@
 import React from "react";
 import { IoCall } from "react-icons/io5";
 import useAddContacts from "../hooks/useAddContacts";
-
+import {ThreeDots} from "react-loader-spinner"
 
 function AddContact({ setToggleAddContact }) {
-  const { nameRef, numberRef, handleAddContactBtn } = useAddContacts(setToggleAddContact);
+  const { nameRef, numberRef, handleAddContactBtn, addContactLoading } =
+    useAddContacts(setToggleAddContact);
 
   return (
     <div className="px-10 py-4 border-2 border-gray-600 rounded-2xl">
@@ -35,7 +36,20 @@ function AddContact({ setToggleAddContact }) {
         />
       </label>
       <button className="btn btn-success w-full" onClick={handleAddContactBtn}>
-        ADD
+        {!addContactLoading ? (
+          <p>ADD</p>
+        ) : (
+          <ThreeDots
+            visible={true}
+            height="40"
+            width="40"
+            color="white"
+            radius="2"
+            ariaLabel="three-dots-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+          />
+        )}
       </button>
     </div>
   );

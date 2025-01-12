@@ -1,5 +1,5 @@
 // useAddContacts.js
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAuthContext } from "../../context/AuthContext";
@@ -11,23 +11,24 @@ const useAddContacts = (setToggleAddContact) => {
   const { setContacts ,fetchAuthUser, setFetchAuthUser} = useAuthContext();
   const nameRef = useRef(null);
   const numberRef = useRef(null);
+  const [addContactLoading,setAddContactLoading] = useState(false)
 
   const handleAddContactBtn = () => {
+
     let name = nameRef.current.value;
     let number = numberRef.current.value;
+    setAddContactLoading(true)
 
     if (name.trim() !== "" && number.trim() !== "") {
       if (number.length !== 10) return toast.error("Enter the 10 Digit Contact Number");
-
       axios.post(
         `${import.meta.env.VITE_SERVER_URL}/addContact`,
         { contactName: name, contactNumber: number },
         { headers: { authorization: `bearer ${token}` } }
       )
       .then(() => {
-        console.log("Contact is added  !!!")
+        toast.success("Contact is added !!!")
         setToggleAddContact(prev => !prev);
-        setFetchAuthUser(prev => !prev);
       })
       .catch(error => {
         if (error.response && error.response.data === "The Contact is Already there in your chatList") {
@@ -40,27 +41,16 @@ const useAddContacts = (setToggleAddContact) => {
     } else {
       toast.error("Add the Credentials Carefully");
     }
+    setAddContactLoading(false)
   };
 
   useEffect(() => {
     socket?.on("newContact", (newContact) => {
       setContacts(prev => [...prev, newContact]);
     });
+  }, [token]);
 
-    axios.get(`${import.meta.env.VITE_SERVER_URL}/userDetails`, {
-      headers: { authorization: `bearer ${token}` },
-    })
-    .then(res => {
-      // console.log("userDetails : ", res.data);
-      setContacts(res.data.contacts);
-    })
-    .catch(error => {
-      console.log("userDetails error", error);
-      toast.error("Internal Server Error");
-    });
-  }, [setContacts, token]);
-
-  return { nameRef, numberRef, handleAddContactBtn };
+  return { nameRef, numberRef, handleAddContactBtn,addContactLoading };
 };
 
 export default useAddContacts;

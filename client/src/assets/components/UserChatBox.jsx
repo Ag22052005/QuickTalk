@@ -6,10 +6,10 @@ import { convertToIST } from "./Message";
 import { useTabSwitchContext } from "../../context/TabSwitchContext";
 import dp from "../images/dp.png"
 function UserChatBox({ contact }) {
-  const { setCurrentReceiver,currentReceiver, currentConversation } = useContext(ChatContext);
+  const { setCurrentReceiver,currentReceiver} = useContext(ChatContext);
   const { onlineUsers } = useContext(SocketContext);
   const isOnline = onlineUsers.includes(contact.userId._id);
-  const{currentTab,setCurrentTab} = useTabSwitchContext()
+  const{setCurrentTab} = useTabSwitchContext()
   const currentContact= currentReceiver?.userId._id === contact.userId._id
   // console.log("current contact for ",currentReceiver,contact,currentContact)
   const handleCurrentReceiver = () => {
@@ -37,9 +37,6 @@ function UserChatBox({ contact }) {
           {contact.contactName}
         </div>
       </div>
-      {/* <div className="flex justify-center items-center mr-4">
-
-      </div> */}
     </div>
   );
 }

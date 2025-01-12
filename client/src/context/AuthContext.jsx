@@ -17,7 +17,7 @@ const AuthContextProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(
     JSON.parse(localStorage.getItem("user")) || null
   );
-  const [contacts, setContacts] = useState(authUser.contacts || []);
+  const [contacts, setContacts] = useState(authUser?.contacts || []);
   useEffect(()=>{
     // console.log("fetching contacts .......")
     if(authUser)
@@ -26,7 +26,7 @@ const AuthContextProvider = ({ children }) => {
       { headers: { authorization: `bearer ${token}` } }
     ).then(res => { 
       const user = res.data;
-      console.log("user.contacts :",user.contacts)
+      // console.log("user.contacts :",user.contacts)
       setContacts(user.contacts)
     })
   },[authUser,fetchAuthUser])

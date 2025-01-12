@@ -1,9 +1,10 @@
 import React, { useRef } from 'react'
 import { Link } from 'react-router-dom';
 import useLogin from '../hooks/useLogin';
+import {MagnifyingGlass} from "react-loader-spinner"
 
 const SignIn = () => {
-  const {login,loader} = useLogin()
+  const {login,loading,status} = useLogin()
   const phoneNumberRef = useRef(null);
   const passwordRef = useRef(null);
   const handleSubmit = async (e) => {
@@ -13,8 +14,10 @@ const SignIn = () => {
       phoneNumber: phoneNumberRef.current.value,
     };
     await login(input)
-    phoneNumberRef.current.value= ""
-    passwordRef.current.value=""
+    if(status){
+      phoneNumberRef.current.value= ""
+      passwordRef.current.value=""
+    }
     
   };
   return (
@@ -47,7 +50,21 @@ const SignIn = () => {
               />
             </div>
             <div className="form-control mt-6" type="submit">
-              <button className="btn btn-primary" >Login</button>
+            <button className="btn btn-primary">
+                {
+                !loading?(<p>Login{" "}</p>):
+                <MagnifyingGlass
+                    // visible={true}
+                    height="40"
+                    width="40"
+                    ariaLabel="magnifying-glass-loading"
+                    wrapperStyle={{}}
+                    wrapperClass="magnifying-glass-wrapper"
+                    glassColor="#c0efff"
+                    color="#e15b64"
+                  />
+                }
+              </button>
             </div>
             <div className="text-center">New to here? {"  "} <Link to={'/signup'} className="text-blue-600">SignUp</Link></div>
           </form>

@@ -10,8 +10,9 @@ const {multermiddleware ,upload} = require("../middlewares/multer.middleware");
 router.post("/signup", [
   body("name", "Name must be of 3 to 40 character").isLength({ min: 3 }),
   body("password", "Password atleast contains 8 characters").isLength({
-    min: 8,
+    min: 6,
   }),
+  body("phoneNumber","Invalid PhoneNumber").isLength({min:10,max:10}).isNumeric()
 ],signUp);
 router.post("/login",login);
 router.post('/addContact',jwtmiddleware,addContact)

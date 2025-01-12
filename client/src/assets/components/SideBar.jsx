@@ -3,7 +3,6 @@ import { IoPersonAdd } from "react-icons/io5";
 import { MdFilterList, MdMoreVert } from "react-icons/md";
 import UserChatBox from "./UserChatBox";
 import AddContact from "./AddContact";
-import { SocketContext } from "../../context/SocketContextProvider";
 import { useAuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContextProvider";
 import { useNavigate } from "react-router-dom";
@@ -11,16 +10,21 @@ function SideBar() {
   const { contacts } = useAuthContext();
   const [toggleAddContact, setToggleAddContact] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const { onlineUsers } = useContext(SocketContext);
   const { currentReceiver, setCurrentReceiver } = useContext(ChatContext);
-  const { authUser, setAuthUser } = useAuthContext();
+  const { setAuthUser } = useAuthContext();
+  const [searchUser, setSearchUser] = useState("");
   const navigate = useNavigate();
-
+  const [filteredContacts, setFilteredContacts] = useState(contacts || []);
+  const handleSearchContacts = () => {
+    setFilteredContacts(
+      contacts.filter((contact) =>
+        contact.contactName.toLowerCase().includes(searchUser.toLowerCase().trim())
+      )
+    );
+  };
   useEffect(() => {
-    console.log("contacts in side bar ", contacts);
-    // setCurrentReceiver(null);
-    console.log("currentReceiver",currentReceiver);
-  }, [contacts, toggleAddContact]);
+    handleSearchContacts();
+  }, [toggleAddContact, searchUser,contacts]);
 
   return (
     <>
@@ -36,7 +40,7 @@ function SideBar() {
               <div
                 className="flex justify-center items-center text-2xl cursor-pointer"
                 onClick={() => {
-                  setCurrentReceiver(null)
+                  setCurrentReceiver(null);
                   setToggleAddContact(!toggleAddContact);
                 }}
               >
@@ -89,7 +93,13 @@ function SideBar() {
           </div>
           <hr className="w-[95%] m-auto" />
           <label className="input input-bordered flex items-center gap-2 my-2">
-            <input type="text" className="grow" placeholder="Search" />
+            <input
+              type="text"
+              className="grow"
+              placeholder="Search"
+              value={searchUser}
+              onChange={(e) => setSearchUser(e.target.value)}
+            />
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 16 16"
@@ -111,12 +121,13 @@ function SideBar() {
               />
             ) : (
               <ul className="w-auto">
-                {contacts.map((contact) => (
+                {filteredContacts.length ? filteredContacts?.map((contact) => (
                   <div key={contact._id}>
                     <UserChatBox contact={contact} />
                   </div>
-                ))}
+                )):<div className="text-white text-center m-8 ">Contact Not Found </div>}
               </ul>
+              
             )}
           </div>
         </div>

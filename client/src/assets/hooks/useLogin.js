@@ -6,6 +6,7 @@ import { useAuthContext } from "../../context/AuthContext";
 
 const useLogin = () => {
   const navigate = useNavigate();
+  const [status, setStatus] = useState(false)
   const [loading, setLoading] = useState(false);
   const {setAuthUser} = useAuthContext()
   const login = ({ phoneNumber, password }) => {
@@ -23,7 +24,8 @@ const useLogin = () => {
         localStorage.setItem("user", JSON.stringify(res.data.user));
         setAuthUser(res.data.user)
         localStorage.setItem("authToken", res.data.authToken);
-        console.log("navigating to /");
+        setStatus(true)
+        // console.log("navigating to /");
       })
       .catch((error) => {
         setLoading(false);
@@ -31,6 +33,6 @@ const useLogin = () => {
         toast.error(error.response.data.errmsg);
       });
   };
-  return { loading, login };
+  return { loading, login ,status};
 };
 export default useLogin;

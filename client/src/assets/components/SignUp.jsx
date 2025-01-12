@@ -1,12 +1,13 @@
 import React, { useRef } from "react";
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import useSignup from "../hooks/useSignUp";
+import { TailSpin } from "react-loader-spinner";
 
 const SignUp = () => {
   const nameRef = useRef(null);
   const phoneNumberRef = useRef(null);
   const passwordRef = useRef(null);
-  const {loading,signup} = useSignup()
+  const { loading, signup, status } = useSignup();
   const handleSubmit = async (e) => {
     e.preventDefault();
     let input = {
@@ -15,14 +16,15 @@ const SignUp = () => {
       password: passwordRef.current.value,
     };
     await signup(input);
-    nameRef.current.value = "";
-    phoneNumberRef.current.value = "";
-    passwordRef.current.value = "";
+    if (status) {
+      nameRef.current.value = "";
+      phoneNumberRef.current.value = "";
+      passwordRef.current.value = "";
+    }
   };
 
   return (
     <div className="hero bg-base-200 min-h-screen">
-      
       <div className="hero-content flex-col lg:flex-row-reverse">
         <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
           <form className="card-body" onSubmit={handleSubmit}>
@@ -63,7 +65,22 @@ const SignUp = () => {
               />
             </div>
             <div className="form-control mt-6 " type="submit">
-              <button className="btn btn-primary">Sign Up</button>
+              <button className="btn btn-primary">
+                {!loading ? (
+                  <p>Sign Up </p>
+                ) : (
+                  <TailSpin
+                    visible={true}
+                    height="30"
+                    width="30"
+                    color="white"
+                    ariaLabel="tail-spin-loading"
+                    radius="5"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                  />
+                )}
+              </button>
             </div>
             <div className="text-center">
               Already an user? {"  "}
@@ -74,7 +91,6 @@ const SignUp = () => {
           </form>
         </div>
       </div>
-      
     </div>
   );
 };

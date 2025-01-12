@@ -6,6 +6,7 @@ import { useAuthContext } from "../../context/AuthContext";
 
 
 const useSignup =() => {
+  const [status,setStatus] = useState(false)
   const [loading,setLoading] = useState(false)
   const navigate = useNavigate()
   const {setAuthUser} = useAuthContext()
@@ -20,18 +21,21 @@ const useSignup =() => {
       localStorage.setItem('authToken',res.data.authToken)
       setAuthUser(res.data.user)
       
-      setLoading(false)
+      setStatus(true)
       toast.success("Sign Up Successfully")
       navigate('/');
     }).catch((error)=>{
-      setLoading(false)
-      console.log("sign Up error ",error)
-      toast.error("Sign Up Failed")
+      const errorArray = error.response.data.errors
+      errorArray.forEach(err => {
+        toast.error(err.msg)
+      });
+      console.log("sign Up error ",error.response.data.errors)
+      
     })
     
 
   }
-  return {loading,signup}
+  return {loading,signup,status}
   
 };
 export default useSignup

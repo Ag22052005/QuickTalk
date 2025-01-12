@@ -58,7 +58,7 @@ const addContact = async (req, res) => {
     }
 
     // Emit the new contact to the sender
-    io.to(getReceiverSocketId(senderObjectId)).emit("newContact",senderData.contacts[senderData.contacts.length - 1]);
+    // io.to(getReceiverSocketId(senderObjectId)).emit("newContact",senderData.contacts[senderData.contacts.length - 1]);
     res.send("Added successfully");
   } catch (e) {
     console.log("Add to contact in userController : ", e);
@@ -84,8 +84,7 @@ const signUp = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log(errors.array());
-      res.status(504).json({ status: "err", errors: errors.array() });
-      // console.log("hiiiiiiiiiiiiiiiiiiiiiii")
+      res.status(504).json({errors: errors.array() });
       return;
     }
     const data = req.body;
@@ -96,9 +95,6 @@ const signUp = async (req, res) => {
     data.password = hashedpassword;
     // console.log(data);
 
-    // Adding Profile pic
-
-    
     const user = new User(data);
     const response = await user.save();
     console.log("User is created");

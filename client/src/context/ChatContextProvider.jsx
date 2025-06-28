@@ -9,38 +9,17 @@ export const ChatContext = createContext({
   setStatus: () => {},
   currentConversation: [],
   setCurrentConversation: () => {},
+  chatLoader:"",
+  setChatLoader:()=>{}
+
 });
 
 export const ChatContextProvider = ({ children }) => {
   const [currentReceiver, setCurrentReceiver] = useState(null);
   const [status, setStatus] = useState("offline");
   const [currentConversation, setCurrentConversation] = useState([]);
-  const token = localStorage.getItem("authToken");
-  useEffect(() => {
-    setCurrentConversation([])
-    if (currentReceiver != null && currentReceiver != "") {
-      // console.log("currentReceiver in chatContextProvider", currentReceiver);
-      axios
-        .get(
-          `${import.meta.env.VITE_SERVER_URL}/get-chats/${
-            currentReceiver.userId._id
-          }`,
-          {
-            headers: {
-              authorization: `bearer ${token}`,
-            },
-          }
-        )
-        .then((res) => {
-          // console.log("getchat : ",res.data)
-          setCurrentConversation(res.data.messages);
-        })
-        .catch((error) => {
-          console.log("get-chat error", error);
-          toast.error("Internal Server Error");
-        });
-    }
-  }, [currentReceiver, status]);
+  const [chatLoader, setChatLoader] = useState(false)
+  
   return (
     <ChatContext.Provider
       value={{
@@ -50,6 +29,8 @@ export const ChatContextProvider = ({ children }) => {
         setStatus,
         currentConversation,
         setCurrentConversation,
+        chatLoader,
+        setChatLoader
       }}
     >
       {children}

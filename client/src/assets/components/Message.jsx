@@ -1,6 +1,7 @@
 import React, { useState, useEffect, memo } from "react";
 import { useAuthContext } from "../../context/AuthContext";
 import dp from "../images/dp.png"
+import useChatSide from "../hooks/useChatSide";
 export function convertToIST(utcDateString) {
   const date = new Date(utcDateString);
   return date.toLocaleTimeString('en-IN', { 
@@ -12,19 +13,8 @@ export function convertToIST(utcDateString) {
 }
 
 const Message = memo(({ message,ReceiverForProfilePic }) => {
-  const [chatSide, setChatSide] = useState("");
   const { authUser } = useAuthContext();
-  // console.log("message",message)
-  useEffect(() => {
-    if (authUser?._id) {
-      if (message.senderId === authUser._id) {
-        setChatSide("chat-end");
-      } else {
-        setChatSide("chat-start");
-      }
-    }
-  }, [message.senderId, authUser]);
-  // console.log("authUser in message component",authUser)
+  const chatSide = useChatSide(authUser,message)
   const avatarUrl = message.senderId === authUser?._id
     ? authUser.profilePic
     : ReceiverForProfilePic.userId.profilePic;

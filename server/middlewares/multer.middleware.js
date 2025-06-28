@@ -2,7 +2,6 @@ const { v2: cloudinary } = require("cloudinary");
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 const multer = require("multer");
-const User = require("../models/user.model")
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,

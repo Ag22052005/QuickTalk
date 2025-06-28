@@ -4,7 +4,7 @@ import { ChatContext } from "../../context/ChatContextProvider";
 import chatmsgaudio from '../audios/chatmsgaudio.mp3'
 const useListenMessage = () => {
   const { socket } = useContext(SocketContext);
-  const { currentConversation, setCurrentConversation } = useContext(ChatContext);
+  const { setCurrentConversation } = useContext(ChatContext);
   const audio = new Audio(chatmsgaudio);
     function playAudio() {
       audio.play();

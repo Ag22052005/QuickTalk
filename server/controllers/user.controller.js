@@ -22,47 +22,140 @@ const userDetails = async(req,res)=>{
 
 const addContact = async (req, res) => {
   try {
+    // Input validation
     const { contactNumber, contactName } = req.body;
+    if (!contactNumber || !contactName) {
+      return res.status(400).json({ 
+        status: "error", 
+        message: "Contact number and contact name are required" 
+      });
+    }
+
     const senderId = req.user.userId;
     const senderObjectId = new mongoose.Types.ObjectId(senderId);
-    
-    const friend = await User.findOne({ phoneNumber: contactNumber });
+
+    // Optimized parallel queries with specific field selection
+    const [friend, senderData] = await Promise.all([
+      User.findOne({ phoneNumber: contactNumber })
+        .select('_id name phoneNumber profilePic')
+        .lean(),
+      User.findById(senderObjectId)
+        .select('_id contacts name')
+    ]);
+
+    // Early validation checks
     if (!friend) {
-      return res.status(404).send("User is not on chatApp");
+      return res.status(404).json({ 
+        status: "error", 
+        message: "User is not registered on ChatApp" 
+      });
     }
 
-    const senderData = await User.findById(senderObjectId);
     if (!senderData) {
-      return res.status(404).send("Sender not found");
+      return res.status(404).json({ 
+        status: "error", 
+        message: "Sender not found" 
+      });
     }
 
-    const isAlreadyAdded = senderData.contacts.some(f => f.userId.equals(friend._id));
+    // Prevent adding self as contact
+    if (senderData._id.equals(friend._id)) {
+      return res.status(400).json({ 
+        status: "error", 
+        message: "Cannot add yourself as a contact" 
+      });
+    }
+
+    // Check if contact already exists using optimized method
+    const isAlreadyAdded = senderData.contacts.some(contact => 
+      contact.userId.equals(friend._id)
+    );
+    
     if (isAlreadyAdded) {
-      console.log("The Contact is Already there in your chatList");
-      return res.status(400).send("The Contact is Already there in your chatList");
+      return res.status(409).json({ 
+        status: "error", 
+        message: "Contact already exists in your chat list" 
+      });
     }
 
-    // Add the new contact
-    senderData.contacts.push({ userId: friend._id, contactName });
-    await senderData.save();
+    const [updatedUser,updatedFriend ,existingChat] = await Promise.all([
+      
+      User.findByIdAndUpdate(
+        senderObjectId,
+        { $push: { contacts: { userId: friend._id, contactName } } },
+        { new: true, select: 'contacts' }
+      ),
+      User.findByIdAndUpdate(
+        friend._id,
+        {$push:{contacts:{userId:senderObjectId,contactName:senderData.name||"unknown"}}},
+        {new:true}
+      ),
+      // Check for existing chat in parallel
+      Chat.findOne({
+        participants: { $all: [senderObjectId, friend._id] }
+      }).select('_id').lean()
+    ]);
 
-    // Check if a chat already exists between the sender and the friend
-    const existingChat = await Chat.findOne({
-      participants: { $all: [senderObjectId, friend._id] }
+    console.log("updated friend",updatedFriend)
+
+    // Create chat if it doesn't exist (non-blocking)
+    if (!existingChat) {
+      Chat.create({ participants: [senderId, friend._id] }).catch(error => {
+        console.error("Error creating chat:", error);
+      });
+    }
+
+    // Emit new contact event (uncomment if needed)
+    // const receiverSocketId = getReceiverSocketId(senderObjectId);
+    // if (receiverSocketId) {
+    //   io.to(receiverSocketId).emit("newContact", {
+    //     userId: friend._id,
+    //     contactName,
+    //     userId: {
+    //       _id: friend._id,
+    //       name: friend.name,
+    //       phoneNumber: friend.phoneNumber,
+    //       profilePic: friend.profilePic
+    //     }
+    //   });
+    // }
+
+    res.status(201).json({ 
+      status: "success", 
+      message: "Contact added successfully",
+      contact: {
+        userId: friend._id,
+        contactName,
+        name: friend.name,
+        phoneNumber: friend.phoneNumber,
+        profilePic: friend.profilePic
+      }
     });
 
-    if (!existingChat) {
-      // Create a new conversation only if it doesn't exist
-      const participants = [senderId, friend._id];
-      await Chat.create({ participants });
+  } catch (error) {
+    console.error("Add contact error:", error);
+    
+    // Handle specific errors
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ 
+        status: "error", 
+        message: "Invalid data provided",
+        details: error.message 
+      });
     }
-
-    // Emit the new contact to the sender
-    // io.to(getReceiverSocketId(senderObjectId)).emit("newContact",senderData.contacts[senderData.contacts.length - 1]);
-    res.send("Added successfully");
-  } catch (e) {
-    console.log("Add to contact in userController : ", e);
-    res.status(500).json({ status: "internal error", error: e });
+    
+    if (error.name === 'CastError') {
+      return res.status(400).json({ 
+        status: "error", 
+        message: "Invalid user ID format" 
+      });
+    }
+    
+    res.status(500).json({ 
+      status: "error", 
+      message: "Internal server error",
+      ...(process.env.NODE_ENV === 'development' && { details: error.message })
+    });
   }
 };
 

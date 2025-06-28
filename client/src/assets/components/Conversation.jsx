@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { IoSend } from "react-icons/io5";
 import { MdMoreVert } from "react-icons/md";
 import Message from "./Message";
@@ -16,9 +16,8 @@ import {
   FaMicrophone,
 } from "react-icons/fa";
 import { ChatContext } from "../../context/ChatContextProvider";
-import axios from "axios";
-import toast from "react-hot-toast";
 import useListenMessage from "../hooks/useListenMessage";
+import useFetchChats from "../hooks/useFetchChats"
 import { useAuthContext } from "../../context/AuthContext";
 import { SocketContext } from "../../context/SocketContextProvider";
 import { FaArrowLeft } from "react-icons/fa6";
@@ -26,22 +25,24 @@ import { motion } from "framer-motion";
 import EmojiPicker from "emoji-picker-react";
 import dp from "../images/dp.png";
 import MessageSkeleton from "../skeleton/MessageSkeleton";
-
+import useSendMessage from "../hooks/useSendMessage";
 
 const Conversation = () => {
   useListenMessage();
-  const token = localStorage.getItem("authToken");
+  useFetchChats()
   const {
     currentConversation,
     setCurrentConversation,
     currentReceiver,
     setCurrentReceiver,
+    chatLoader,
+    setChatLoader
   } = useContext(ChatContext);
   const { contacts, authUser } = useAuthContext();
   const lastMessageRef = useRef(null);
   const inputMessageRef = useRef(null);
   const { onlineUsers } = useContext(SocketContext);
-
+  
   const [isAttachmentOpen, setIsAttachmentOpen] = useState(false);
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -52,14 +53,11 @@ const Conversation = () => {
     "chat-start",
     "chat-end",
   ];
+  const {sendMessage,handleEmojiClick,handleAudio,handleDocumentChange} = useSendMessage(message,setMessage)
 
-  // New state for the selected document
-  const [selectedDocument, setSelectedDocument] = useState(null);
-  // console.log(contacts)
   const ReceiverForProfilePic = contacts.find(
     (contact) => contact.userId._id === currentReceiver.userId._id
   );
-  // console.log("result",result)
   useEffect(() => {
     setTimeout(() => {
       lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -67,43 +65,8 @@ const Conversation = () => {
     }, 100);
   }, [currentConversation]);
 
-  const sendMessage = () => {
-    if (message.trim() !== "") {
-      axios
-        .post(
-          `${import.meta.env.VITE_SERVER_URL}/send/${
-            currentReceiver.userId._id
-          }`,
-          { message: message.trim(), document: selectedDocument }, // Include the document if present
-          { headers: { authorization: `bearer ${token}` } }
-        )
-        .then((res) => {
-          const newMessage = res.data;
-          setCurrentConversation([...currentConversation, newMessage]);
-          setMessage("");
-          setSelectedDocument(null); // Clear the document after sending
-        })
-        .catch((error) => {
-          console.log("send msg error", error);
-          toast.error("Error :", error.message);
-        });
-    }
-  };
 
-  const handleEmojiClick = (emojiObject) => {
-    setMessage((prev) => prev + emojiObject.emoji);
-  };
-
-  const handleAudio = () => {
-    console.log("Audio recording feature triggered.");
-  };
-
-  const handleDocumentChange = (event) => {
-    const file = event.target.files[0]; // Get the first file
-    if (file) {
-      setSelectedDocument(file); // Set the selected document
-    }
-  };
+  
 
   return (
     <>
@@ -111,7 +74,7 @@ const Conversation = () => {
       <div className="flex items-center justify-between p-4 text-white fixed top-2 z-50 w-[50%] backdrop-blur-md conversationHead ">
         <div className="flex items-center space-x-3">
           <FaArrowLeft onClick={() => setCurrentReceiver(null)} />
-          <div className="bg-gray-200 rounded-full ">
+          <div className="bg-gray-200 w-[40px] h-[40px] rounded-full ">
             <img
               src={currentReceiver.userId.profilePic || dp}
               className="w-[40px] h-[40px] object-cover rounded-full"
@@ -133,6 +96,13 @@ const Conversation = () => {
       </div>
 
       {/* Message Area */}
+      {chatLoader?(<ul className="space-y-2">
+            {chatSides.map((side, index) => (
+              <div key={index}>
+                <MessageSkeleton chatSide={side}/>
+              </div>
+            ))}
+          </ul>):
       <div className="flex-grow overflow-y-auto bg-gray-900 p-4 mt-20">
         {currentConversation.length ? (
           <ul className="space-y-2">
@@ -145,16 +115,10 @@ const Conversation = () => {
               </div>
             ))}
           </ul>
-        ) : (
-          <ul className="space-y-2">
-            {chatSides.map((side, index) => (
-              <div key={index}>
-                <MessageSkeleton chatSide={side}/>
-              </div>
-            ))}
-          </ul>
-        )}
+        ):(<div>Send Message to Start conversation</div>)
+      }
       </div>
+}
 
       {/* Input Area */}
       <div className="relative flex items-center p-2">

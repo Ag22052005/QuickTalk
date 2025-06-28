@@ -5,7 +5,7 @@ import UserChatBox from "./UserChatBox";
 import AddContact from "./AddContact";
 import { useAuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContextProvider";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 function SideBar() {
   const { contacts } = useAuthContext();
   const [toggleAddContact, setToggleAddContact] = useState(false);
@@ -56,26 +56,26 @@ function SideBar() {
                 {showDropdown && (
                   <div className="absolute right-0 mt-2 w-40 bg-[#1d232a] rounded-md shadow-lg z-10">
                     <ul className="py-2">
-                      <li
-                        className="px-4 py-2 hover:bg-slate-800 cursor-pointer"
+                      <Link to ="/profile"
+                        className="px-4 py-2 hover:bg-slate-800 cursor-pointer block"
                         onClick={() => {
                           // Handle profile settings
                           setShowDropdown(false);
                         }}
                       >
                         Profile
-                      </li>
-                      <li
-                        className="px-4 py-2 hover:bg-slate-800  cursor-pointer"
+                      </Link>
+                      <Link to=""
+                        className="px-4 py-2 hover:bg-slate-800  cursor-pointer block"
                         onClick={() => {
                           // Handle settings
                           setShowDropdown(false);
                         }}
                       >
                         Settings
-                      </li>
-                      <li
-                        className="px-4 py-2 hover:bg-slate-800  cursor-pointer text-red-500"
+                      </Link>
+                      <Link to ="/"
+                        className="px-4 py-2 hover:bg-slate-800  cursor-pointer text-red-500 block"
                         onClick={() => {
                           localStorage.removeItem("authToken");
                           localStorage.removeItem("user");
@@ -84,7 +84,7 @@ function SideBar() {
                         }}
                       >
                         Logout
-                      </li>
+                      </Link>
                     </ul>
                   </div>
                 )}

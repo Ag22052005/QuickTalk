@@ -1,6 +1,7 @@
-import { createContext, useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import { createContext, useState } from "react";
+
 import { useAuthContext } from "./AuthContext";
+import useInitializeSocket from "../assets/hooks/useInitializeSocket";
 
 export const SocketContext = createContext({});
 
@@ -8,31 +9,7 @@ export const SocketContextProvider = ({ children }) => {
   const { authUser } = useAuthContext();
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
-  const token = localStorage.getItem("authToken");
-  useEffect(() => {
-    if (authUser) {
-      const socket = io(`${import.meta.env.VITE_SERVER_URL}`, {
-        query: {
-          userId: authUser?._id,
-        },
-      });
-      setSocket(socket);
-
-      socket.on("connect",() => {
-        console.log("connected", socket.id);
-      })
-      socket.on("getOnlineUsers", (res) => {
-        setOnlineUsers(res);
-      });
-      return () => socket.close();
-    } else {
-      if (socket) {
-        socket.close();
-        setSocket(null);
-      }
-    }
-  }, [authUser]);
-
+  useInitializeSocket(authUser,setSocket,setOnlineUsers)
   return (
     <SocketContext.Provider value={{ socket, onlineUsers }}>
       {children}

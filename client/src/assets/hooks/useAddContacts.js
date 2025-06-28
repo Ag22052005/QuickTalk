@@ -33,9 +33,10 @@ const useAddContacts = (setToggleAddContact) => {
       .catch(error => {
         if (error.response && error.response.data === "The Contact is Already there in your chatList") {
           toast.error("Contact already exists");
-        } else {
-          console.log("add to contact error", error);
-          toast.error("Internal Server Error");
+        } else if (error.response && error.response.status === 404) {
+          toast.error("User is not on QuickTalk");
+        }else {
+          toast.error("Something went wrong, please try again later");
         }
       });
     } else {

@@ -7,18 +7,7 @@ const Chat = require("../models/chat.model");
 const {io, getReceiverSocketId} = require('./../socket/socket')
 
 
-const userDetails = async(req,res)=>{
-  try {
-    const senderId = req.user.userId;
-    const senderObjectId = new mongoose.Types.ObjectId(senderId)
-    const user = await User.findById(senderObjectId)
-    // console.log(user)
-    res.status(200).json(user)
-  } catch (error) {
-    console.log(error)
-    res.status(504).json(error)
-  }
-}
+
 
 const addContact = async (req, res) => {
   try {
@@ -159,18 +148,6 @@ const addContact = async (req, res) => {
   }
 };
 
-const getContacts =async (req, res)=>{
-  const {userId} = req.user;
-  // console.log(userId)
-  const userwithPopulate = await User.findOne({_id:userId}).populate({
-    path: "contacts.userId", // Path to populate
-    select: "name phoneNumber profilePic" // Fields to include from the referenced User
-  });
-  
-  res.status(200).json(userwithPopulate)
-}
-
-
 const signUp = async (req, res) => {
   try {
     // console.log("hereererere")
@@ -194,6 +171,7 @@ const signUp = async (req, res) => {
     const payload = {
       userId: user.id
     };
+    delete response.password
     const authToken = jwt.sign(payload, process.env.JWT_KEY);
     // console.log(authToken);
     res.status(200).json({ user:response, authToken: authToken });
@@ -211,7 +189,10 @@ const signUp = async (req, res) => {
 const login = async (req, res) => {
   try {
     const user = req.body;
-    const isUser = await User.findOne({ phoneNumber:user.phoneNumber})
+    const isUser = await User.findOne({ phoneNumber:user.phoneNumber}).populate({
+      path: "contacts.userId", // Path to populate
+      select: "-password -contacts" // Fields to include from the referenced User
+    });
 
     if (!isUser) {
       throw new Error("User Not Found");
@@ -221,16 +202,13 @@ const login = async (req, res) => {
       throw new Error("Password is Incorrect");
     }
     const payload = {
-      userId: isUser.id,
+      userId: isUser._id,
     };
     const authToken = jwt.sign(payload, process.env.JWT_KEY);
     // console.log(authToken);
-    const populateUser = await isUser.populate({
-      path: "contacts.userId", // Path to populate
-      select: "name phoneNumber profilePic" // Fields to include from the referenced User
-    });
-    // console.log(populateUser)
-    res.status(200).json({ user: populateUser, authToken: authToken });
+    delete isUser.password;
+    console.log(isUser)
+    res.status(200).json({ user: isUser, authToken: authToken });
   } catch (error) {
     console.log("login Error ", error)
     if (error.message === "User Not Found")
@@ -264,5 +242,4 @@ const UploadProfliePic = async (req,res)=>{
   res.status(200).json(user);
 }
 
-
-module.exports = { signUp, login,addContact,userDetails,updateAvatar ,getContacts,UploadProfliePic};
+module.exports = { signUp, login,addContact,updateAvatar ,UploadProfliePic};

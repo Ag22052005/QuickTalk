@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import { ChatContext } from '../../context/ChatContextProvider';
 import { useEffect } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const useFetchChats = () => {
   const {setChatLoader,chatLoader,setCurrentConversation,currentReceiver,status} = useContext(ChatContext);
@@ -12,7 +13,7 @@ const useFetchChats = () => {
     setCurrentConversation([])
     setChatLoader(true)
     if (currentReceiver != null && currentReceiver != "") {
-    
+      // console.log(currentReceiver)
       fetchChats()
   }}, [currentReceiver, status]);
 

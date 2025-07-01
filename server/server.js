@@ -2,6 +2,7 @@ const express = require('express')
 require('dotenv').config();
 const db = require('./db.js')
 const cors = require('cors')
+require('./socket/videocall.js')
 const userRoutes = require('./routes/user.routes.js')
 const chatRoutes = require('./routes/chat.routes.js');
 const { app,server } = require('./socket/socket.js');

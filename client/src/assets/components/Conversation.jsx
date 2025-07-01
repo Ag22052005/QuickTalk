@@ -14,10 +14,11 @@ import {
   FaPoll,
   FaMagic,
   FaMicrophone,
+  FaVideo,
 } from "react-icons/fa";
 import { ChatContext } from "../../context/ChatContextProvider";
 import useListenMessage from "../hooks/useListenMessage";
-import useFetchChats from "../hooks/useFetchChats"
+import useFetchChats from "../hooks/useFetchChats";
 import { useAuthContext } from "../../context/AuthContext";
 import { SocketContext } from "../../context/SocketContextProvider";
 import { FaArrowLeft } from "react-icons/fa6";
@@ -26,23 +27,24 @@ import EmojiPicker from "emoji-picker-react";
 import dp from "../images/dp.png";
 import MessageSkeleton from "../skeleton/MessageSkeleton";
 import useSendMessage from "../hooks/useSendMessage";
+import useStartVideoCall from "../hooks/useStartVideoCall";
 
 const Conversation = () => {
   useListenMessage();
-  useFetchChats()
+  useFetchChats();
   const {
     currentConversation,
     setCurrentConversation,
     currentReceiver,
     setCurrentReceiver,
     chatLoader,
-    setChatLoader
+    setChatLoader,
   } = useContext(ChatContext);
   const { contacts, authUser } = useAuthContext();
   const lastMessageRef = useRef(null);
   const inputMessageRef = useRef(null);
   const { onlineUsers } = useContext(SocketContext);
-  
+
   const [isAttachmentOpen, setIsAttachmentOpen] = useState(false);
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -53,7 +55,10 @@ const Conversation = () => {
     "chat-start",
     "chat-end",
   ];
-  const {sendMessage,handleEmojiClick,handleAudio,handleDocumentChange} = useSendMessage(message,setMessage)
+  const { sendMessage, handleEmojiClick, handleAudio, handleDocumentChange } =
+    useSendMessage(message, setMessage);
+
+  const {startVideoCall} = useStartVideoCall()
 
   const ReceiverForProfilePic = contacts.find(
     (contact) => contact.userId._id === currentReceiver.userId._id
@@ -64,9 +69,6 @@ const Conversation = () => {
       // console.log("currentReceiver",currentReceiver)
     }, 100);
   }, [currentConversation]);
-
-
-  
 
   return (
     <>
@@ -92,33 +94,39 @@ const Conversation = () => {
             </p>
           </div>
         </div>
-        <MdMoreVert className="text-2xl cursor-pointer text-white" />
+        <div className="flex min-w-24 justify-around">
+          <FaVideo onClick={startVideoCall} />
+          <MdMoreVert className="text-2xl cursor-pointer text-white" />
+        </div>
       </div>
 
       {/* Message Area */}
-      {chatLoader?(<ul className="space-y-2">
-            {chatSides.map((side, index) => (
-              <div key={index}>
-                <MessageSkeleton chatSide={side}/>
-              </div>
-            ))}
-          </ul>):
-      <div className="flex-grow overflow-y-auto bg-gray-900 p-4 mt-20">
-        {currentConversation.length ? (
-          <ul className="space-y-2">
-            {currentConversation.map((message) => (
-              <div key={message._id} ref={lastMessageRef}>
-                <Message
-                  message={message}
-                  ReceiverForProfilePic={ReceiverForProfilePic}
-                />
-              </div>
-            ))}
-          </ul>
-        ):(<div>Send Message to Start conversation</div>)
-      }
-      </div>
-}
+      {chatLoader ? (
+        <ul className="space-y-2">
+          {chatSides.map((side, index) => (
+            <div key={index}>
+              <MessageSkeleton chatSide={side} />
+            </div>
+          ))}
+        </ul>
+      ) : (
+        <div className="flex-grow overflow-y-auto bg-gray-900 p-4 mt-20">
+          {currentConversation.length ? (
+            <ul className="space-y-2">
+              {currentConversation.map((message) => (
+                <div key={message._id} ref={lastMessageRef}>
+                  <Message
+                    message={message}
+                    ReceiverForProfilePic={ReceiverForProfilePic}
+                  />
+                </div>
+              ))}
+            </ul>
+          ) : (
+            <div>Send Message to Start conversation</div>
+          )}
+        </div>
+      )}
 
       {/* Input Area */}
       <div className="relative flex items-center p-2">

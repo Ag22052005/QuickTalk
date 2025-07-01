@@ -10,13 +10,14 @@ const useListenMessage = () => {
       audio.play();
     }
   useEffect(() => {
-    socket?.on("newMessage", (newMessage) => {
+    const newMessageHandler = (newMessage) => {
       setCurrentConversation((prev) => [...prev, newMessage]);
       playAudio();
-    });
+    }
+    socket?.on("newMessage", newMessageHandler);
 
     // Cleanup listener
-    return () => socket?.off("newMessage");
+    return () => socket?.off("newMessage",newMessageHandler);
   }, [socket, setCurrentConversation]);
 };
 

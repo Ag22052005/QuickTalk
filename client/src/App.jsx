@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   createBrowserRouter,
   Navigate,
@@ -10,12 +10,10 @@ import SignUp from "./assets/components/SignUp";
 import SignIn from "./assets/components/SignIn";
 import Home from "./assets/screen/Home";
 import  { useAuthContext } from "./context/AuthContext.jsx";
-import SelectAvatar from "./assets/screen/SelectAvatar.jsx";
 import Profile from "./assets/screen/Profile.jsx";
+import VideoCallPage  from "./assets/screen/VideoCallPage.jsx";
 
 const App = () => {
-
-  // Move useAuthContext here
   const { authUser } = useAuthContext();
 
   const router = createBrowserRouter([
@@ -23,10 +21,6 @@ const App = () => {
       path: "/",
       element: authUser ? <Home /> : <Navigate to={"/login"} />,
     },
-    // {
-    //   path:"/select-avatar",
-    //   element:<SelectAvatar/>
-    // },
     {
       path: "/login",
       element: authUser ? <Navigate to={"/"} /> : <SignIn />,
@@ -38,6 +32,10 @@ const App = () => {
     {
       path:"/profile",
       element:authUser ? <Profile/>  : <Navigate to={"/"}/>,
+    },
+    {
+      path:'/video-call/:roomId',
+      element:authUser ? <VideoCallPage/> : <Navigate to={"/"}/>,
     }
   ]);
 

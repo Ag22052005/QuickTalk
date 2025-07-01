@@ -10,8 +10,9 @@ export const ChatContext = createContext({
   currentConversation: [],
   setCurrentConversation: () => {},
   chatLoader:"",
-  setChatLoader:()=>{}
-
+  setChatLoader:()=>{},
+  videoCallSender:{},
+  setVideoCallSender:()=>{},
 });
 
 export const ChatContextProvider = ({ children }) => {
@@ -19,6 +20,7 @@ export const ChatContextProvider = ({ children }) => {
   const [status, setStatus] = useState("offline");
   const [currentConversation, setCurrentConversation] = useState([]);
   const [chatLoader, setChatLoader] = useState(false)
+  const [videoCallSender,setVideoCallSender] = useState(null)
   
   return (
     <ChatContext.Provider
@@ -30,7 +32,9 @@ export const ChatContextProvider = ({ children }) => {
         currentConversation,
         setCurrentConversation,
         chatLoader,
-        setChatLoader
+        setChatLoader,
+        videoCallSender,
+        setVideoCallSender,
       }}
     >
       {children}

@@ -122,7 +122,7 @@ function SideBar() {
             ) : (
               <ul className="w-auto">
                 {filteredContacts.length ? filteredContacts?.map((contact) => (
-                  <div key={contact._id}>
+                  <div key={contact._id} >
                     <UserChatBox contact={contact} />
                   </div>
                 )):<div className="text-white text-center m-8 ">Contact Not Found </div>}

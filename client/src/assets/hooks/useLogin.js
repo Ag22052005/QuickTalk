@@ -8,7 +8,7 @@ const useLogin = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState(false)
   const [loading, setLoading] = useState(false);
-  const {setAuthUser} = useAuthContext()
+  const {setAuthUser,setContacts} = useAuthContext()
   const login = ({ phoneNumber, password }) => {
     setLoading(true);
     axios
@@ -23,6 +23,7 @@ const useLogin = () => {
         
         localStorage.setItem("user", JSON.stringify(res.data.user));
         setAuthUser(res.data.user)
+        setContacts(res.data.user.contacts)
         localStorage.setItem("authToken", res.data.authToken);
         setStatus(true)
         // console.log("navigating to /");
@@ -30,7 +31,7 @@ const useLogin = () => {
       .catch((error) => {
         setLoading(false);
         console.log("Login error ", error);
-        toast.error(error.response.data.errmsg);
+        toast.error(error.response?.data?.errmsg);
       });
   };
   return { loading, login ,status};

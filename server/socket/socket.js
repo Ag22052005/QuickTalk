@@ -1,7 +1,7 @@
 const express = require("express");
 const { Server } = require("socket.io");
 const { createServer } = require("http");
-
+const {registerVideoCallHandler} = require('./videocall.js')
 const app = express();
 const server = createServer(app);
 
@@ -25,6 +25,8 @@ io.on("connection", (socket) => {
     // console.log(userSocketMap);
     io.emit("getOnlineUsers", Object.keys(userSocketMap)); // Emit only when userId is valid
   }
+
+  registerVideoCallHandler(socket,userSocketMap,io)
 
   socket.on("disconnect", () => {
     // console.log(`User disconnected: ${socket.id}`);

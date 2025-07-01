@@ -34,10 +34,10 @@ const VideoCallPage = () => {
 
   const negotiationNeededHandler = async () => {
     if (!videoCallSender) {
-      console.log("videocall sender", videoCallSender);
-      console.log("i'm the initiator for negotiationneeded");
+      // console.log("videocall sender", videoCallSender);
+      // console.log("i'm the initiator for negotiationneeded");
       const offer = await peer.getOffer();
-      console.log("current receiver for receiver", currentReceiver);
+      // console.log("current receiver for receiver", currentReceiver);
       socket.emit("peer:nego:needed", {
         receiverId: authUser._id,
         senderId: currentReceiver?.userId?._id,
@@ -47,12 +47,12 @@ const VideoCallPage = () => {
   };
 
   const peerNegotiatingHandler = async ({ receiverId, senderId, offer }) => {
-    console.log("creating offer in sender");
+    // console.log("creating offer in sender");
     const ans = await peer.getAnswer(offer);
     socket.emit("peer:nego:done", { senderId, receiverId, ans });
   };
   const peerNegoFinalHandler = async ({ ans }) => {
-    console.log("final negotiation in sender with ans ", ans);
+    // console.log("final negotiation in sender with ans ", ans);
     await peer.setRemoteDescription(ans);
   };
 
@@ -87,8 +87,8 @@ const VideoCallPage = () => {
 
     if (remoteStreamRef.current && remoteStream) {
       remoteStreamRef.current.srcObject = remoteStream;
-      remoteStreamRef.current.muted = false; // ✅ enable audio
-      remoteStreamRef.current.volume = 1; // ✅ set volume
+      remoteStreamRef.current.muted = false; 
+      remoteStreamRef.current.volume = 1; 
       remoteStreamRef.current.play().catch((err) => {
         console.error("Error playing remote stream:", err);
       });
@@ -108,7 +108,6 @@ const VideoCallPage = () => {
               autoPlay
               playsInline
               muted
-              controls
               className="rounded-xl w-full h-[300px] sm:h-[400px] object-cover"
             />
           </div>
@@ -123,8 +122,6 @@ const VideoCallPage = () => {
               ref={remoteStreamRef}
               autoPlay
               playsInline
-              muted
-              controls
               className="rounded-xl w-full h-[300px] sm:h-[400px] object-cover"
             />
           </div>

@@ -25,7 +25,7 @@ const useInitializeSocket = (authUser, setSocket, setOnlineUsers,roomId,setRoomI
       });
       setSocket(socket);
       const incomingVideoCallHandler = async ({callerId,roomId,receiverId,offer}) => {
-        console.log("incomming video call from ", callerId, "in room ", roomId);
+        // console.log("incomming video call from ", callerId, "in room ", roomId);
         // console.log("offer", offer);
         const ans = await peer.getAnswer(offer);
         socket.emit("join-video-call", { callerId,roomId,receiverId,ans });
@@ -37,8 +37,8 @@ const useInitializeSocket = (authUser, setSocket, setOnlineUsers,roomId,setRoomI
       const joinedVideoCallHandler = async ({ callerId,roomId,receiverId,ans }) => {
         console.log("ans in joinedvideocallhandler", ans);
         await peer.setRemoteDescription(ans);
-        console.log("user-joined", receiverId)
-        toast.success("user-joined", receiverId);
+        console.log("user-joined")
+        toast.success("user-joined");
       };
 
       const getOnlineUsersHandler = (res) => {

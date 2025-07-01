@@ -3,7 +3,7 @@ const registerVideoCallHandler = async(socket,userSocketMap,io)=>{
     // console.log(callerId,roomId,receiverId)
     socket.join(roomId)
     // console.log("All sockets in room", roomId, [...io.sockets.adapter.rooms.get(roomId) || []]);
-    console.log(userSocketMap)
+    // console.log(userSocketMap)
     const receiverSocketId = userSocketMap[receiverId]
     // console.log("receiver socket id", receiverSocketId)
     if(!receiverSocketId){
@@ -16,9 +16,10 @@ const registerVideoCallHandler = async(socket,userSocketMap,io)=>{
   socket.on("join-video-call",async({callerId,roomId,receiverId,ans})=>{
     console.log("in the join-video-call")
     socket.join(roomId)
+    const senderSocketId = userSocketMap[callerId]
     // console.log("All sockets in room", roomId, [...io.sockets.adapter.rooms.get(roomId) || []]);
     // console.log(ans ,"in joinedvideocall backend")
-    socket.to(roomId).emit("joined-video-call",{callerId,roomId,receiverId,ans})
+    socket.to(senderSocketId).emit("joined-video-call",{callerId,roomId,receiverId,ans})
   })
 
   socket.on("peer:nego:needed",async({receiverId,senderId,offer})=>{

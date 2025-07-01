@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import peer from "../services/peer";
-import { useContext } from "react";
 import { SocketContext } from "../../context/SocketContextProvider";
 import { ChatContext } from "../../context/ChatContextProvider";
 import { authContext } from "../../context/AuthContext";
@@ -10,6 +9,7 @@ const VideoCallPage = () => {
   const [remoteStream, setRemoteStream] = useState(null);
   const myStreamRef = useRef(null);
   const remoteStreamRef = useRef(null);
+
   const { socket } = useContext(SocketContext);
   const { currentReceiver, videoCallSender } = useContext(ChatContext);
   const { authUser } = useContext(authContext);
@@ -22,22 +22,18 @@ const VideoCallPage = () => {
       });
       setMyStream(stream);
 
-      // Add each track to the peer connection
       for (const track of stream.getTracks()) {
         peer.peer.addTrack(track, stream);
-        console.log("adding tracks", track);
+        console.log("Adding track:", track);
       }
     } catch (err) {
-      console.error("Error accessing camera/microphone", err);
+      console.error("Error accessing media devices:", err);
     }
   };
 
   const negotiationNeededHandler = async () => {
     if (!videoCallSender) {
-      // console.log("videocall sender", videoCallSender);
-      // console.log("i'm the initiator for negotiationneeded");
       const offer = await peer.getOffer();
-      // console.log("current receiver for receiver", currentReceiver);
       socket.emit("peer:nego:needed", {
         receiverId: authUser._id,
         senderId: currentReceiver?.userId?._id,
@@ -47,58 +43,63 @@ const VideoCallPage = () => {
   };
 
   const peerNegotiatingHandler = async ({ receiverId, senderId, offer }) => {
-    // console.log("creating offer in sender");
     const ans = await peer.getAnswer(offer);
     socket.emit("peer:nego:done", { senderId, receiverId, ans });
   };
+
   const peerNegoFinalHandler = async ({ ans }) => {
-    // console.log("final negotiation in sender with ans ", ans);
     await peer.setRemoteDescription(ans);
   };
 
+  // Get local stream on mount
   useEffect(() => {
     getUserMediaStream();
   }, []);
 
+  // Handle remote track event
   useEffect(() => {
     const handleTrackEvent = (ev) => {
-      const remoteStream = ev.streams[0];
-      console.log("remote stream", remoteStream);
-      setRemoteStream(remoteStream);
+      const inboundStream = ev.streams[0];
+      console.log("Received remote stream:", inboundStream);
+      setRemoteStream(inboundStream);
     };
 
     peer.peer.addEventListener("track", handleTrackEvent);
-
     return () => {
       peer.peer.removeEventListener("track", handleTrackEvent);
     };
-  }, [remoteStream]);
+  }, []);
 
+  // Setup negotiation and signaling
   useEffect(() => {
     peer.peer.addEventListener("negotiationneeded", negotiationNeededHandler);
     socket.on("peer:negotiating", peerNegotiatingHandler);
     socket.on("peer:nego:final", peerNegoFinalHandler);
+
+    return () => {
+      socket.off("peer:negotiating", peerNegotiatingHandler);
+      socket.off("peer:nego:final", peerNegoFinalHandler);
+      peer.peer.removeEventListener("negotiationneeded", negotiationNeededHandler);
+    };
   }, []);
 
-  // Handle my stream
+  // Set my stream to video element
   useEffect(() => {
     if (myStreamRef.current && myStream) {
       myStreamRef.current.srcObject = myStream;
     }
   }, [myStream]);
 
-  // Handle remote stream separately
+  // Set remote stream to video element
   useEffect(() => {
     if (remoteStreamRef.current && remoteStream) {
       remoteStreamRef.current.srcObject = remoteStream;
 
-      // TEMP FIX: Add muted just to check if autoplay restriction is the issue
-      remoteStreamRef.current.muted = true;
-
+      // Try to play (especially useful for mobile)
       remoteStreamRef.current
         .play()
         .then(() => console.log("Remote video playing"))
-        .catch((err) => console.error("Error playing remote stream:", err));
+        .catch((err) => console.error("Error playing remote video:", err));
     }
   }, [remoteStream]);
 
@@ -122,9 +123,7 @@ const VideoCallPage = () => {
 
         {remoteStream && (
           <div className="bg-gray-800 rounded-2xl shadow-lg p-4 w-full lg:w-1/2">
-            <h2 className="text-xl font-medium mb-2 text-center">
-              Remote Stream
-            </h2>
+            <h2 className="text-xl font-medium mb-2 text-center">Remote Stream</h2>
             <video
               ref={remoteStreamRef}
               autoPlay
@@ -133,7 +132,6 @@ const VideoCallPage = () => {
             />
           </div>
         )}
-        
       </div>
     </div>
   );

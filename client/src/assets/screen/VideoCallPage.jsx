@@ -61,6 +61,7 @@ const VideoCallPage = () => {
     const handleTrackEvent = (ev) => {
       const inboundStream = ev.streams[0];
       console.log("Received remote stream:", inboundStream);
+      console.log("Remote audio tracks:", inboundStream.getAudioTracks());
       setRemoteStream(inboundStream);
     };
 
@@ -79,7 +80,10 @@ const VideoCallPage = () => {
     return () => {
       socket.off("peer:negotiating", peerNegotiatingHandler);
       socket.off("peer:nego:final", peerNegoFinalHandler);
-      peer.peer.removeEventListener("negotiationneeded", negotiationNeededHandler);
+      peer.peer.removeEventListener(
+        "negotiationneeded",
+        negotiationNeededHandler
+      );
     };
   }, []);
 
@@ -93,13 +97,20 @@ const VideoCallPage = () => {
   // Set remote stream to video element
   useEffect(() => {
     if (remoteStreamRef.current && remoteStream) {
-      remoteStreamRef.current.srcObject = remoteStream;
+      const videoEl = remoteStreamRef.current;
+      videoEl.srcObject = remoteStream;
+      
+      const handleLoaded = () => {
+        videoEl
+          .play()
+          .then(() => console.log("Remote video playing"))
+          .catch((err) => console.error("Error playing remote video:", err));
+      };
+      videoEl.onloadedmetadata = handleLoaded;
 
-      // Try to play (especially useful for mobile)
-      remoteStreamRef.current
-        .play()
-        .then(() => console.log("Remote video playing"))
-        .catch((err) => console.error("Error playing remote video:", err));
+      return () => {
+        videoEl.onloadedmetadata = null;
+      };
     }
   }, [remoteStream]);
 
@@ -115,7 +126,6 @@ const VideoCallPage = () => {
               ref={myStreamRef}
               autoPlay
               playsInline
-              muted
               className="rounded-xl w-full h-[300px] sm:h-[400px] object-cover"
             />
           </div>
@@ -123,11 +133,14 @@ const VideoCallPage = () => {
 
         {remoteStream && (
           <div className="bg-gray-800 rounded-2xl shadow-lg p-4 w-full lg:w-1/2">
-            <h2 className="text-xl font-medium mb-2 text-center">Remote Stream</h2>
+            <h2 className="text-xl font-medium mb-2 text-center">
+              Remote Stream
+            </h2>
             <video
               ref={remoteStreamRef}
               autoPlay
               playsInline
+              volume={1}
               className="rounded-xl w-full h-[300px] sm:h-[400px] object-cover"
             />
           </div>

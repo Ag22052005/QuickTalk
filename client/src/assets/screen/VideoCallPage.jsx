@@ -80,20 +80,27 @@ const VideoCallPage = () => {
     socket.on("peer:nego:final", peerNegoFinalHandler);
   }, []);
 
+  // Handle my stream
   useEffect(() => {
     if (myStreamRef.current && myStream) {
       myStreamRef.current.srcObject = myStream;
     }
+  }, [myStream]);
 
+  // Handle remote stream separately
+  useEffect(() => {
     if (remoteStreamRef.current && remoteStream) {
       remoteStreamRef.current.srcObject = remoteStream;
-      remoteStreamRef.current.muted = false; 
-      remoteStreamRef.current.volume = 1; 
-      remoteStreamRef.current.play().catch((err) => {
-        console.error("Error playing remote stream:", err);
-      });
+
+      // TEMP FIX: Add muted just to check if autoplay restriction is the issue
+      remoteStreamRef.current.muted = true;
+
+      remoteStreamRef.current
+        .play()
+        .then(() => console.log("Remote video playing"))
+        .catch((err) => console.error("Error playing remote stream:", err));
     }
-  }, [myStream, remoteStream]);
+  }, [remoteStream]);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center px-4 py-8">
@@ -124,6 +131,16 @@ const VideoCallPage = () => {
               playsInline
               className="rounded-xl w-full h-[300px] sm:h-[400px] object-cover"
             />
+
+            {/* Manual play button (for mobile autoplay issues) */}
+            <button
+              onClick={() => {
+                remoteStreamRef.current?.play();
+              }}
+              className="mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-white mx-auto block"
+            >
+              Play Remote Stream
+            </button>
           </div>
         )}
       </div>

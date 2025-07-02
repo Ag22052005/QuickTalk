@@ -160,6 +160,7 @@ const VideoCallPage = () => {
             <video
               ref={myStreamRef}
               autoPlay
+              muted
               playsInline
               className="rounded-xl w-full h-[300px] sm:h-[400px] object-cover"
             />

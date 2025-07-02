@@ -39,6 +39,17 @@ const registerVideoCallHandler = async(socket,userSocketMap,io)=>{
     socket.to(receiverSocketId).emit("peer:nego:final",{ans})
   })
 
+  socket.on("handle-ice-candidate",async({receiverId,iceCandidate})=>{
+    console.log("receiverId",receiverId,"with iceCandidate",iceCandidate)
+    const receiverSocketId = userSocketMap[receiverId]
+    if(!receiverSocketId){
+      console.log("user is offline")
+      return
+    }
+    socket.to(receiverSocketId).emit("add-ice-candidate",{iceCandidate})
+
+  })
+
 
 }
 

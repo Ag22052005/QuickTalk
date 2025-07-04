@@ -1,6 +1,4 @@
-import axios from "axios";
-import { createContext, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { createContext, useState } from "react";
 
 export const ChatContext = createContext({
   currentReceiver: "",

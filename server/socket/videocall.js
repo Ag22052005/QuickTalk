@@ -50,7 +50,6 @@ const registerVideoCallHandler = async(socket,userSocketMap,io)=>{
 
   })
 
-
 }
 
 module.exports = {registerVideoCallHandler}

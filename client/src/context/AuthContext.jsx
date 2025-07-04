@@ -15,11 +15,7 @@ const AuthContextProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(
     JSON.parse(localStorage.getItem("user")) || null
   );
-  const [contacts, setContacts] = useState(authUser?.contacts || []);
-  // useEffect(()=>{
-  //   console.log("authUser",authUser)
-  //   console.log("contacts",contacts)
-  // },[authUser,contacts])
+  const [contacts, setContacts] = useState([]);
   return (
     <authContext.Provider value={{ authUser, setAuthUser,contacts,setContacts,fetchAuthUser,setFetchAuthUser }}>
       {children}

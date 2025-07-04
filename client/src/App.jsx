@@ -5,14 +5,12 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { io } from "socket.io-client";
-import SignUp from "./assets/components/SignUp";
-import SignIn from "./assets/components/SignIn";
-import Home from "./assets/screen/Home";
-import  { useAuthContext } from "./context/AuthContext.jsx";
-import Profile from "./assets/screen/Profile.jsx";
-import VideoCallPage  from "./assets/screen/VideoCallPage.jsx";
-
+import SignUp from "./components/shared/SignUp"; 
+import SignIn from "./components/shared/SignIn"; 
+import Home from "./screen/Home";
+import { useAuthContext } from "./context/AuthContext";
+import Profile from "./screen/Profile"; 
+import VideoCallPage from "./screen/VideoCallPage"; 
 const App = () => {
   const { authUser } = useAuthContext();
 

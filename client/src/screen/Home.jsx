@@ -31,9 +31,8 @@ function Home() {
   }, [darkMode]);
 
   return (
-    <div className="relative w-full h-screen">
-      {/* Toggle switch at absolute top-right of screen */}
-      <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
+    <div  className="flex flex-col">
+      <div className="z-50 flex items-center gap-2 self-end p-4 ">
         <Label htmlFor="mode-switch" className="text-white dark:text-gray-200">
           {darkMode ? "🌙 Dark" : "☀️ Light"}
         </Label>
@@ -43,14 +42,16 @@ function Home() {
           onCheckedChange={(val) => setDarkMode(val)}
         />
       </div>
+      <div className="relative w-full">
+        {/* Toggle switch at absolute top-right of screen */}
 
-      {/* Main content */}
-      <div className="artboard rounded-lg m-auto w-[80vw] h-[100vh] flex homeScreen bg-background border border-border">
-        <SideBar />
-        <ConversationArea />
+        {/* Main content */}
+        <div className="artboard rounded-lg m-auto w-[80vw] h-[100vh] flex homeScreen bg-background border border-border">
+          <SideBar />
+          <ConversationArea />
+        </div>
       </div>
     </div>
-    
   );
 }
 

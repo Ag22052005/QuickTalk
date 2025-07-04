@@ -52,9 +52,12 @@ function SideBar() {
       const result = contacts?.filter((contact) =>
         contact?.contactName
           ?.toLowerCase()
+          .includes(searchUser.toLowerCase().trim())||contact?.userId?.phoneNumber.toString()
           .includes(searchUser.toLowerCase().trim())
       );
       setFilteredContacts(result);
+    }else{
+      setFilteredContacts(contacts)
     }
   }, [searchUser, contacts]);
 
@@ -73,7 +76,8 @@ function SideBar() {
     >
       <div className="mx-4 h-full flex flex-col">
         {/* Header */}
-        <div className="flex justify-between items-center py-3 px-2 bg-white dark:bg-zinc-900 text-black dark:text-white shadow-sm rounded-md">
+        <div className="flex justify-between items-center py-3 px-2 bg-background text-foreground shadow-sm rounded-md">
+
           <h1 className="text-2xl font-semibold">Chats</h1>
           <div className="flex items-center gap-2">
             <Button

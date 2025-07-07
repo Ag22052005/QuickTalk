@@ -4,11 +4,11 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "./components/ui/sonner";
 import SignUp from "./components/shared/SignUp"; 
 import SignIn from "./components/shared/SignIn"; 
 import Home from "./screen/Home";
-import { useAuthContext } from "./context/AuthContext";
+import { useAuthContext } from "./context/AuthContextProvider";
 import Profile from "./screen/Profile"; 
 import VideoCallPage from "./screen/VideoCallPage"; 
 const App = () => {
@@ -40,7 +40,7 @@ const App = () => {
   return (
     <>
       <RouterProvider router={router} />
-      <Toaster />
+      <Toaster position="top-center" richColors style={{ zIndex: 9999 }} className='h-20' duration= {1000} />
     </>
   );
 };

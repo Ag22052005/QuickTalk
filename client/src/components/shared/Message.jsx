@@ -1,7 +1,6 @@
 import React, { memo } from "react";
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/context/AuthContextProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import useChatSide from "@/hooks/useChatSide";
 import dp from "@/assets/images/dp.png";
 
 export function convertToIST(utcDateString) {
@@ -16,7 +15,6 @@ export function convertToIST(utcDateString) {
 
 const Message = memo(({ message, ReceiverForProfilePic }) => {
   const { authUser } = useAuthContext();
-  const chatSide = useChatSide(authUser, message);
   const isSentByMe = message.senderId === authUser?._id;
 
   const avatarUrl = isSentByMe
@@ -39,21 +37,20 @@ const Message = memo(({ message, ReceiverForProfilePic }) => {
 
       {/* Bubble */}
       <div
-  className={`rounded-2xl px-4 py-2 text-sm relative max-w-[80%] break-words shadow-md transition-all duration-200 ease-in-out ${
-    isSentByMe
-      ? "bg-blue-700 text-white rounded-br-none"
-      : "bg-zinc-800 text-white rounded-bl-none dark:bg-zinc-700"
-  }`}
-  style={{ paddingBottom: "1.5rem" }} // Add space for time
->
-  <p className="whitespace-pre-wrap">{message.message}</p>
+        className={`rounded-2xl px-4 py-2 text-sm relative max-w-[80%] break-words shadow-md transition-all duration-200 ease-in-out ${
+          isSentByMe
+            ? "bg-blue-700 text-white rounded-br-none"
+            : "bg-zinc-800 text-white rounded-bl-none dark:bg-zinc-700"
+        }`}
+        style={{ paddingBottom: "1.5rem" }} // Add space for time
+      >
+        <p className="whitespace-pre-wrap">{message.message}</p>
 
-  {/* Time positioned in bottom-right, outside text flow */}
-  <div className="absolute bottom-1 right-2 text-xs text-white/70">
-    {convertToIST(message.createdAt)}
-  </div>
-</div>
-
+        {/* Time positioned in bottom-right, outside text flow */}
+        <div className="absolute bottom-1 right-2 text-xs text-white/70">
+          {convertToIST(message.createdAt)}
+        </div>
+      </div>
 
       {/* Avatar on right if sent by me (optional) */}
       {isSentByMe && (

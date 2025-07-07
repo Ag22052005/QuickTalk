@@ -1,19 +1,23 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import peer from "../services/peer";
-import { SocketContext } from "@/context/SocketContextProvider"; 
-import { ChatContext } from "@/context/ChatContextProvider"; 
-import { authContext } from "@/context/AuthContext"; 
+import { useSocketContext } from "@/context/SocketContextProvider";
+import { useChatContext } from "@/context/ChatContextProvider";
+import { AuthContext } from "@/context/AuthContextProvider";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const VideoCallPage = () => {
   const [myStream, setMyStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
   const myStreamRef = useRef(null);
   const remoteStreamRef = useRef(null);
+  const navigate = useNavigate();
 
-  const { socket } = useContext(SocketContext);
-  const { currentReceiver, videoCallSender } = useContext(ChatContext);
-  const { authUser } = useContext(authContext);
+  const { socket } = useSocketContext();
+  const { currentReceiver, videoCallSender } = useChatContext();
+  const { authUser } = useContext(AuthContext);
 
+  // Getting User Media Stream
   const getUserMediaStream = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -31,6 +35,7 @@ const VideoCallPage = () => {
     }
   };
 
+  // Negotiation Needed Handler
   const negotiationNeededHandler = async () => {
     if (!videoCallSender) {
       // console.log("negotiationneeded")
@@ -48,7 +53,7 @@ const VideoCallPage = () => {
     getUserMediaStream();
   }, []);
 
-  // Handle remote track event
+  // Handling Ice candidates and negotiationNeeded
   useEffect(() => {
     const handleIceCandidate = async (ev) => {
       // console.log("current Receiver in handleicecandidates",currentReceiver)
@@ -88,11 +93,13 @@ const VideoCallPage = () => {
       );
       peer.peer.removeEventListener("icecandidate", handleIceCandidate);
     };
-  }, []);
+  }, [socket, currentReceiver, peer]);
+
+  // Handle remote track event
   useEffect(() => {
     const handleTrackEvent = (ev) => {
       const inboundStream = ev.streams[0];
-      console.log("Received remote stream:", inboundStream);
+      // console.log("Received remote stream:", inboundStream);
       // console.log("Remote audio tracks:", inboundStream.getAudioTracks());
       setRemoteStream(inboundStream);
     };
@@ -100,7 +107,7 @@ const VideoCallPage = () => {
     return () => {
       peer.peer.removeEventListener("track", handleTrackEvent);
     };
-  }, []);
+  }, [peer]);
 
   // Setup negotiation and signaling
   useEffect(() => {
@@ -120,7 +127,7 @@ const VideoCallPage = () => {
       socket.off("peer:negotiating", peerNegotiatingHandler);
       socket.off("peer:nego:final", peerNegoFinalHandler);
     };
-  }, []);
+  }, [socket, peer]);
 
   // Set my stream to video element
   useEffect(() => {
@@ -150,6 +157,31 @@ const VideoCallPage = () => {
       };
     }
   }, [remoteStream]);
+
+  useEffect(() => {
+    const handleRejection = () => {
+      // 1. Stop local tracks
+      if (myStream) {
+        myStream.getTracks().forEach((track) => {
+          track.stop();
+        });
+      }
+
+      // 2. Clear the stream from video element
+      if (myStreamRef.current) {
+        myStreamRef.current.srcObject = null;
+      }
+
+      toast.error("Call Declined");
+      navigate("/");
+    };
+
+    socket.on("receiver-rejected-call", handleRejection);
+
+    return () => {
+      socket.off("receiver-rejected-call", handleRejection);
+    };
+  }, [socket, myStream]);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center px-4 py-8">

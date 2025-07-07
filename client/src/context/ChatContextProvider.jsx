@@ -1,17 +1,27 @@
-import { createContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 export const ChatContext = createContext({
-  currentReceiver: "",
+  currentReceiver:{},
   setCurrentReceiver: () => {},
-  status: "",
+  status: "offline",
   setStatus: () => {},
   currentConversation: [],
   setCurrentConversation: () => {},
-  chatLoader:"",
+  chatLoader:false,
   setChatLoader:()=>{},
   videoCallSender:{},
   setVideoCallSender:()=>{},
 });
+
+export const useChatContext = ()=>{
+  const context = useContext(ChatContext);
+    if (!context) {
+      throw new Error(
+        "useChatContext must be used within an ChatContextProvider"
+      );
+    }
+    return context;
+}
 
 export const ChatContextProvider = ({ children }) => {
   const [currentReceiver, setCurrentReceiver] = useState(null);

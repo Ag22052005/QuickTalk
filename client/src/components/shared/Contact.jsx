@@ -1,18 +1,18 @@
 import React, { useContext } from "react";
-import { ChatContext } from "@/context/ChatContextProvider";
-import { SocketContext } from "@/context/SocketContextProvider";
-import { useTabSwitchContext } from "@/context/TabSwitchContext";
+import { useChatContext } from "@/context/ChatContextProvider";
+import { useSocketContext } from "@/context/SocketContextProvider";
+import { useTabSwitchContext } from "@/context/TabSwitchContextProvider";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import dp from "@/assets/images/dp.png";
 
-function UserChatBox({ contact }) {
-  const { setCurrentReceiver, currentReceiver } = useContext(ChatContext);
-  const { onlineUsers } = useContext(SocketContext);
+function Contact({ contact }) {
+  const { setCurrentReceiver, currentReceiver } = useChatContext();
+  const { onlineUsers } = useSocketContext();
   const { setCurrentTab } = useTabSwitchContext();
 
-  const isOnline = onlineUsers.includes(contact.userId._id);
-  const isSelected = currentReceiver?.userId._id === contact.userId._id;
+  const isOnline = onlineUsers.includes(contact?.userId?._id);
+  const isSelected = currentReceiver?.userId?._id === contact?.userId?._id;
 
   const handleClick = () => {
     setCurrentReceiver(contact);
@@ -31,16 +31,16 @@ function UserChatBox({ contact }) {
     >
       <div className="flex items-center gap-4">
         <div className="relative w-[50px] h-[50px]">
+          {isOnline && (
+            <span className="absolute">
+              <Badge className="rounded-full bg-green-500 hover:bg-green-500 p-1 w-3 h-3" />
+            </span>
+          )}
           <img
             src={contact.userId.profilePic || dp}
             alt="User"
             className="w-full h-full object-cover rounded-full border border-border"
           />
-          {isOnline && (
-            <span className="absolute -bottom-1 -right-1">
-              <Badge className="rounded-full bg-green-500 p-1 w-3 h-3" />
-            </span>
-          )}
         </div>
         <div className="text-foreground text-lg font-medium truncate max-w-[180px] sm:max-w-[250px]">
           {contact.contactName || contact.userId?.phoneNumber}
@@ -50,4 +50,4 @@ function UserChatBox({ contact }) {
   );
 }
 
-export default UserChatBox;
+export default Contact;

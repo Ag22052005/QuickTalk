@@ -1,7 +1,8 @@
 const express = require("express");
 const { Server } = require("socket.io");
 const { createServer } = require("http");
-const {registerVideoCallHandler} = require('./videocall.js')
+const {registerVideoCallHandler} = require('./videocall.js');
+const { on } = require("events");
 const app = express();
 const server = createServer(app);
 
@@ -27,6 +28,21 @@ io.on("connection", (socket) => {
   }
 
   registerVideoCallHandler(socket,userSocketMap,io)
+
+  socket?.on("sender-typing",({currentReceiver})=>{
+    // console.log("sender is typing",currentReceiver?.userId._id)
+    const receiverSocketId = userSocketMap[currentReceiver?.userId._id]
+    if(receiverSocketId){
+      socket.to(receiverSocketId).emit("Typing")
+    }
+  })
+
+  socket?.on("stop-typing",({currentReceiver})=>{
+    const receiverSocketId = userSocketMap[currentReceiver?.userId._id]
+    if(receiverSocketId){
+      socket.to(receiverSocketId).emit("Stoped-typing")
+    }
+  })
 
   socket.on("disconnect", () => {
     // console.log(`User disconnected: ${socket.id}`);

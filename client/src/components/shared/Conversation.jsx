@@ -21,9 +21,9 @@ import EmojiPicker from "emoji-picker-react";
 
 import Message from "./Message";
 import dp from "@/assets/images/dp.png";
-import { ChatContext } from "@/context/ChatContextProvider";
-import { useAuthContext } from "@/context/AuthContext";
-import { SocketContext } from "@/context/SocketContextProvider";
+import { useChatContext } from "@/context/ChatContextProvider";
+import { useAuthContext } from "@/context/AuthContextProvider";
+import { useSocketContext } from "@/context/SocketContextProvider";
 import MessageSkeleton from "@/skeleton/MessageSkeleton";
 import useSendMessage from "@/hooks/useSendMessage";
 import useStartVideoCall from "@/hooks/useStartVideoCall";
@@ -39,9 +39,9 @@ const Conversation = () => {
     currentReceiver,
     setCurrentReceiver,
     chatLoader,
-  } = useContext(ChatContext);
+  } = useChatContext();
   const { contacts } = useAuthContext();
-  const { onlineUsers } = useContext(SocketContext);
+  const { onlineUsers, socket } = useSocketContext();
 
   const lastMessageRef = useRef(null);
   const inputMessageRef = useRef(null);
@@ -49,6 +49,8 @@ const Conversation = () => {
   const [isAttachmentOpen, setIsAttachmentOpen] = useState(false);
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const [senderTypingStatus, setSenderTypingStatus] = useState(false);
+  const [typingTimeOut, setTypingTimeOut] = useState(null);
 
   const { sendMessage, handleEmojiClick, handleAudio, handleDocumentChange } =
     useSendMessage(message, setMessage);
@@ -57,6 +59,20 @@ const Conversation = () => {
   const ReceiverForProfilePic = contacts.find(
     (contact) => contact.userId._id === currentReceiver.userId._id
   );
+  const handleInputChange = (e) => {
+    setMessage(e.target.value);
+    if (socket) {
+      socket.emit("sender-typing", { currentReceiver });
+    }
+
+    if (typingTimeOut) clearInterval(typingTimeOut);
+
+    setTypingTimeOut(() =>
+      setTimeout(() => {
+        socket?.emit("stop-typing", { currentReceiver });
+      }, 1000)
+    );
+  };
 
   useEffect(() => {
     setTimeout(() => {
@@ -64,9 +80,17 @@ const Conversation = () => {
     }, 100);
   }, [currentConversation]);
 
+  useEffect(() => {
+    socket?.on("Typing", () => {
+      setSenderTypingStatus(true);
+    });
+    socket?.on("Stoped-typing", () => {
+      setSenderTypingStatus(false);
+    });
+  }, []);
+
   return (
     <div className="flex flex-col h-full bg-white dark:bg-zinc-900 text-black dark:text-white">
-
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 sticky top-0 z-50 bg-white dark:bg-zinc-900 border-b border-muted shadow-sm">
         <div className="flex items-center gap-3">
@@ -81,10 +105,12 @@ const Conversation = () => {
           />
           <div>
             <h1 className="text-base font-semibold">
-              {currentReceiver.contactName}
+              {currentReceiver.contactName || currentReceiver?.userId.phoneNumber}
             </h1>
             <p className="text-xs text-muted-foreground">
-              {onlineUsers.includes(currentReceiver.userId._id)
+              {senderTypingStatus
+                ? "Typing"
+                : onlineUsers.includes(currentReceiver.userId._id)
                 ? "Online"
                 : "Offline"}
             </p>
@@ -141,10 +167,13 @@ const Conversation = () => {
             exit={{ opacity: 0, y: 10 }}
             className="absolute bottom-16 left-2 z-50 bg-zinc-800 text-white rounded-xl shadow-xl p-4 grid grid-cols-4 gap-4 w-64"
           >
-            {[ 
+            {[
               { icon: <FaImage className="text-blue-400" />, label: "Gallery" },
               { icon: <FaCamera className="text-pink-400" />, label: "Camera" },
-              { icon: <FaMapMarkerAlt className="text-green-500" />, label: "Location" },
+              {
+                icon: <FaMapMarkerAlt className="text-green-500" />,
+                label: "Location",
+              },
               { icon: <FaUser className="text-blue-500" />, label: "Contact" },
               {
                 icon: (
@@ -160,9 +189,15 @@ const Conversation = () => {
                 ),
                 label: "Document",
               },
-              { icon: <FaHeadphones className="text-orange-400" />, label: "Audio" },
+              {
+                icon: <FaHeadphones className="text-orange-400" />,
+                label: "Audio",
+              },
               { icon: <FaPoll className="text-yellow-400" />, label: "Poll" },
-              { icon: <FaMagic className="text-indigo-400" />, label: "Imagine" },
+              {
+                icon: <FaMagic className="text-indigo-400" />,
+                label: "Imagine",
+              },
             ].map((item, i) => (
               <div key={i} className="flex flex-col items-center text-xs">
                 {item.icon}
@@ -184,7 +219,7 @@ const Conversation = () => {
           type="text"
           ref={inputMessageRef}
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={(e) => handleInputChange(e)}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           placeholder="Type a message..."
           className="flex-grow bg-transparent border border-muted px-4 py-2 rounded-xl text-sm outline-none"

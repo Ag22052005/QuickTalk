@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
-import { ChatContext } from "@/context/ChatContextProvider";
+import { useChatContext } from "@/context/ChatContextProvider";
 import Greeting from "./Greeting";
 import Conversation from "./Conversation";
 
 function ConversationArea() {
-  const { currentReceiver } = useContext(ChatContext);
+  const { currentReceiver } = useChatContext()
 
   return (
     <div

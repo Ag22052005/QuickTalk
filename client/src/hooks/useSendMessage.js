@@ -1,13 +1,13 @@
 import axios from "axios";
-import { ChatContext } from "@/context/ChatContextProvider";
-import { useContext } from "react";
+import { useChatContext } from "@/context/ChatContextProvider";
 import { useState } from "react";
+import {toast} from "sonner";
 
 const useSendMessage = (message, setMessage) => {
   const token = localStorage.getItem("authToken");
   const [selectedDocument, setSelectedDocument] = useState(null);
   const { currentConversation, setCurrentConversation, currentReceiver } =
-    useContext(ChatContext);
+    useChatContext()
 
   const handleEmojiClick = (emojiObject) => {
     setMessage((prev) => prev + emojiObject.emoji);

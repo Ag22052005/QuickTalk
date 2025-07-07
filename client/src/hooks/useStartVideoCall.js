@@ -1,21 +1,20 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { SocketContext } from "@/context/SocketContextProvider";
-import { authContext } from "@/context/AuthContext";
+import { useSocketContext } from "@/context/SocketContextProvider";
+import { AuthContext } from "@/context/AuthContextProvider";
 import { useNavigate } from "react-router-dom";
-import { ChatContext } from "@/context/ChatContextProvider";
+import { useChatContext } from "@/context/ChatContextProvider";
 import peer from "../services/peer";
 const useStartVideoCall = () => {
-  const { socket } = useContext(SocketContext);
-  const { authUser } = useContext(authContext);
-  const { currentReceiver,setVideoCallSender } = useContext(ChatContext);
+  const { socket } = useSocketContext();
+  const { authUser } = useContext(AuthContext);
+  const { currentReceiver,setVideoCallSender } = useChatContext()
   const navigate = useNavigate();
   const roomId = uuidv4();
 
-  
 
   const startVideoCall = async () => {
-    console.log("emitting video-call-init....");
+    // console.log("emitting video-call-init....");
     setVideoCallSender(authUser._id)
     const offer = await peer.getOffer();
     

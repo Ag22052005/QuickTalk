@@ -1,10 +1,10 @@
 import { useContext, useEffect } from "react";
-import { SocketContext } from "@/context/SocketContextProvider";
-import { ChatContext } from "@/context/ChatContextProvider";
+import { useSocketContext } from "@/context/SocketContextProvider";
+import { useChatContext } from "@/context/ChatContextProvider";
 import chatmsgaudio from '../assets/audios/chatmsgaudio.mp3'
 const useListenMessage = () => {
-  const { socket } = useContext(SocketContext);
-  const { setCurrentConversation } = useContext(ChatContext);
+  const { socket } = useSocketContext();
+  const { setCurrentConversation } = useChatContext();
   const audio = new Audio(chatmsgaudio);
     function playAudio() {
       audio.play();

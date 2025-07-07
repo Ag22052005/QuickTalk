@@ -1,12 +1,10 @@
-import React from 'react'
-import { useContext } from 'react';
-import { ChatContext } from '@/context/ChatContextProvider';
+import { useChatContext } from '@/context/ChatContextProvider';
 import { useEffect } from 'react';
 import axios from 'axios';
-import toast from 'react-hot-toast';
+import {toast} from "sonner";
 
 const useFetchChats = () => {
-  const {setChatLoader,chatLoader,setCurrentConversation,currentReceiver,status} = useContext(ChatContext);
+  const {setChatLoader,chatLoader,setCurrentConversation,currentReceiver,status} = useChatContext();
   const token = localStorage.getItem("authToken");
   useEffect(() => {
     // console.log("fetching chats....")
@@ -15,7 +13,7 @@ const useFetchChats = () => {
     if (currentReceiver != null && currentReceiver != "") {
       // console.log(currentReceiver)
       fetchChats()
-  }}, [currentReceiver, status]);
+  }}, [currentReceiver]);
 
   const fetchChats = ()=>{
     axios
@@ -31,7 +29,8 @@ const useFetchChats = () => {
         )
         .then((res) => {
           // console.log("getchat : ",res.data)
-          setCurrentConversation(res.data.messages);
+          const currentConversation = res.data.messages
+          setCurrentConversation(currentConversation);
         })
         .catch((error) => {
           console.log("get-chat error", error);

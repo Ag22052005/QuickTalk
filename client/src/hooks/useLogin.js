@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useState } from "react";
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/context/AuthContextProvider";
 
 const useLogin = () => {
   const navigate = useNavigate();

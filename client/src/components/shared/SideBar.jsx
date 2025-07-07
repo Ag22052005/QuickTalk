@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuthContext } from "@/context/AuthContext";
-import { ChatContext } from "@/context/ChatContextProvider";
-import { useTabSwitchContext } from "@/context/TabSwitchContext";
-import UserChatBox from "./UserChatBox";
+import { useAuthContext } from "@/context/AuthContextProvider";
+import { useChatContext } from "@/context/ChatContextProvider";
+import Contact from "./Contact";
 import AddContact from "./AddContact";
 
 import { Button } from "@/components/ui/button";
@@ -25,22 +24,30 @@ import {
   Search,
 } from "lucide-react";
 import useGetContacts from "@/hooks/useGetContacts";
+import { useSocketContext } from "@/context/SocketContextProvider";
 
 function SideBar() {
-  const { contacts, setAuthUser } = useAuthContext();
+  const { contacts, setAuthUser ,setContacts} = useAuthContext();
   const {getContact} = useGetContacts()
-  const { currentReceiver, setCurrentReceiver } = useContext(ChatContext);
-  const { setCurrentTab } = useTabSwitchContext();
+  const { currentReceiver, setCurrentReceiver } = useChatContext();
   const [toggleAddContact, setToggleAddContact] = useState(false);
   const [searchUser, setSearchUser] = useState("");
   const [filteredContacts, setFilteredContacts] = useState([]);
+  const {socket} = useSocketContext()
   const navigate = useNavigate();
 
+
   useEffect(() => {
-    
     getContact()
   }, []);
-
+  useEffect(() => {
+    socket?.on("newContact", ({ contacts, phoneNumber }) => {
+      console.log("receiving add contact event");
+      toast.success("you are added by", phoneNumber);
+      setContacts(contacts);
+    });
+  }, [socket]);
+  
   useEffect(()=>{
     // console.log("setting filteredcontacts",contacts);
     setFilteredContacts(contacts);
@@ -148,7 +155,7 @@ function SideBar() {
             <ul className="space-y-1">
               {filteredContacts?.length > 0 ? (
                 filteredContacts.map((contact) => (
-                  <UserChatBox contact={contact} key={contact._id} />
+                  <Contact contact={contact} key={contact._id} />
                 ))
               ) : (
                 <div className="text-center text-sm text-muted-foreground py-8">

@@ -10,8 +10,7 @@ import { Button } from "@/components/ui/button";
 import useAddContacts from "@/hooks/useAddContacts";
 
 function AddContact({ setToggleAddContact }) {
-  const { nameRef, numberRef, handleAddContactBtn, addContactLoading } =
-    useAddContacts(setToggleAddContact);
+  const { nameRef, numberRef, handleAddContactBtn, addContactLoading } = useAddContacts(setToggleAddContact);
 
   return (
     <div className="w-full max-w-md p-6 rounded-2xl border bg-background shadow-md mx-auto mt-4">

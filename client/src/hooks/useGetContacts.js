@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/context/AuthContextProvider";
 import axios from "axios";
 
 const useGetContacts = () => {
@@ -18,7 +18,7 @@ const useGetContacts = () => {
         setContacts(contacts);
       })
       .catch((error) => {
-        console.log("error in get contacts")
+        console.log("error in get contacts",error)
       });
   };
 

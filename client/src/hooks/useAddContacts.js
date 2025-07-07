@@ -1,14 +1,11 @@
-// useAddContacts.js
-import { useContext, useEffect, useRef, useState } from "react";
+import {useRef, useState } from "react";
 import axios from "axios";
-import toast from "react-hot-toast";
-import { useAuthContext } from "@/context/AuthContext";
-import { SocketContext } from "@/context/SocketContextProvider";
+import {toast} from "sonner";
+import { useAuthContext } from "@/context/AuthContextProvider";
 
 const useAddContacts = (setToggleAddContact) => {
-  const { socket } = useContext(SocketContext);
   const token = localStorage.getItem("authToken");
-  const { setContacts ,fetchAuthUser, setFetchAuthUser} = useAuthContext();
+  const { setContacts} = useAuthContext();
   const nameRef = useRef(null);
   const numberRef = useRef(null);
   const [addContactLoading,setAddContactLoading] = useState(false)

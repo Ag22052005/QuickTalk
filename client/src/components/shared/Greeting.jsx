@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuthContext } from '@/context/AuthContext';
+import { useAuthContext } from '@/context/AuthContextProvider';
 import { MdOutlineMarkUnreadChatAlt } from "react-icons/md";
 
 export default function () {

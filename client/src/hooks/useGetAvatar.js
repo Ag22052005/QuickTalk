@@ -5,25 +5,6 @@ const useGetAvatar = () => {
 
   const urls = [
     "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
-    // "https://avatar.iran.liara.run/public",
   ];
   const getAvatars = () => {
     // Promise.allSettled(urls.map((url) => fetch(url))).then((results) => {

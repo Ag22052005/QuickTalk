@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuthContext } from "@/context/AuthContext"; 
+import { useAuthContext } from "@/context/AuthContextProvider"; 
 import { FiCamera } from "react-icons/fi";
 const Profile = () => {
   const [name, setName] = useState("Ashish");

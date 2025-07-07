@@ -106,6 +106,7 @@ const addContact = async (req, res) => {
     // Emit new contact event (uncomment if needed)
     const receiverSocketId = getReceiverSocketId(updatedFriend._id);
     if (receiverSocketId) {
+      console.log("emitting add contact")
       io.to(receiverSocketId).emit("newContact", {
         contacts: updatedFriend?.contacts,
         phoneNumber: updatedUser?.phoneNumber,
